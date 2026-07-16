@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Your Darts</title>
 
     <link rel="stylesheet" href="style.css">
@@ -24,7 +24,7 @@
     <section class="card profileCard" hidden>
 
        <img id="rankImage" class="profileImage" src="images/rank_placeholder.png" alt="Rang" hidden>
-       <div id="rankPlaceholder" class="profileImage rankPlaceholder" aria-label="Noch kein Rang" role="img" hidden></div>
+       <div id="rankPlaceholder" class="profileImage rankPlaceholder" aria-label="Noch kein Rang" role="img" hidden>–</div>
 
         <h2 id="rankName" class="rankName" hidden></h2>
 
@@ -153,6 +153,17 @@
                 <option value="801">801</option>
                 <option value="901">901</option>
             </select>
+        </div>
+
+        <div class="settingsOption settingsOptionStacked">
+            <div>
+                <h3>Einstellungen zurücksetzen</h3>
+                <p>Setzt Design und Startpunkte auf die Standardwerte zurück.</p>
+            </div>
+
+            <button id="resetSettingsButton" class="resetSettingsButton" type="button">
+                Zurücksetzen
+            </button>
         </div>
 
     </div>

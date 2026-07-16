@@ -27,6 +27,7 @@ const themeToggle = document.getElementById("themeToggle");
 const themeToggleText = document.getElementById("themeToggleText");
 const toggleIcon = document.querySelector(".toggleIcon");
 const gameSelect = document.getElementById("gameSelect");
+const resetSettingsButton = document.getElementById("resetSettingsButton");
 
 const multiplierModes = [
   { name: "Single", marker: "●○○", factor: 1, prefix: "" },
@@ -101,10 +102,11 @@ function showRankStats() {
 }
 
 function showRankPlaceholder() {
-  profileCard.hidden = true;
+  profileCard.hidden = false;
   rankImage.hidden = true;
-  rankPlaceholder.hidden = true;
-  rankName.hidden = true;
+  rankPlaceholder.hidden = false;
+  rankName.hidden = false;
+  rankName.innerText = "–";
   averageStats.hidden = true;
 }
 
@@ -181,7 +183,7 @@ function getKeyboardLabel(score) {
   let mode = multiplierModes[multiplierModeIndex];
 
   if (score === 25) {
-    return mode.name === "Double" ? "Bull" : "25";
+    return mode.name === "Triple" ? "Bull" : "25";
   }
 
   return `${mode.prefix}${score}`;
@@ -189,7 +191,7 @@ function getKeyboardLabel(score) {
 
 function getKeyboardValue(score) {
   if (score === 25) {
-    return multiplierModes[multiplierModeIndex].name === "Double" ? 50 : 25;
+    return multiplierModes[multiplierModeIndex].name === "Triple" ? 50 : 25;
   }
 
   return score * multiplierModes[multiplierModeIndex].factor;
@@ -203,20 +205,36 @@ function renderKeyboard() {
   }
 
   scoreKeyboard.appendChild(createKeyboardButton("←", undoDart, "keyboardUtility"));
-  scoreKeyboard.appendChild(createKeyboardButton(getMultiplierText(), toggleMultiplierMode, "keyboardUtility multiplierButton"));
+  scoreKeyboard.appendChild(createMultiplierButton(1));
+  scoreKeyboard.appendChild(createMultiplierButton(2));
   scoreKeyboard.appendChild(createKeyboardButton("0", () => addDart(0)));
   scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(25), () => addDart(getKeyboardValue(25))));
   scoreKeyboard.appendChild(createKeyboardButton("→", redoDart, "keyboardUtility"));
 }
 
-function getMultiplierText() {
-  let mode = multiplierModes[multiplierModeIndex];
+function getMultiplierText(index) {
+  let mode = multiplierModes[index];
   return `${mode.name} ${mode.marker}`;
 }
 
-function toggleMultiplierMode() {
-  multiplierModeIndex = (multiplierModeIndex + 1) % multiplierModes.length;
+function createMultiplierButton(index) {
+  let isSelected = multiplierModeIndex === index;
+  let button = createKeyboardButton(getMultiplierText(index), () => setMultiplierMode(index), "keyboardUtility multiplierButton");
+  button.classList.toggle("isSelected", isSelected);
+  button.setAttribute("aria-pressed", isSelected);
+  return button;
+}
+
+function setMultiplierMode(index) {
+  multiplierModeIndex = index;
   renderKeyboard();
+}
+
+function resetMultiplierMode() {
+  if (multiplierModeIndex !== 0) {
+    multiplierModeIndex = 0;
+    renderKeyboard();
+  }
 }
 
 function addDart(score) {
@@ -226,6 +244,7 @@ function addDart(score) {
 
   currentDarts.push(score);
   redoDarts = [];
+  resetMultiplierMode();
   updateDartDisplays();
 
   if (remainingPoints - getCurrentThrowScore() <= 0 || currentDarts.length === 3) {
@@ -363,6 +382,14 @@ function confirmCurrentRound() {
   clearCurrentThrow();
 }
 
+function resetSettingsToDefaults() {
+  selectedGamePoints = 501;
+  gameSelect.value = selectedGamePoints;
+  localStorage.setItem("gamePoints", selectedGamePoints);
+  applyTheme("dark");
+  resetGame();
+}
+
 function resetGame() {
   remainingPoints = selectedGamePoints;
   gamePoints.innerText = selectedGamePoints;
@@ -418,3 +445,5 @@ gameSelect.addEventListener("change", function () {
   localStorage.setItem("gamePoints", selectedGamePoints);
   resetGame();
 });
+
+resetSettingsButton.addEventListener("click", resetSettingsToDefaults);
