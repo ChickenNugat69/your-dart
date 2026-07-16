@@ -36,7 +36,7 @@ const ranks = [
   { min: 20, max: 29, name: "🌾 Bauer", image: "images/bauer.png" },
   { min: 30, max: 39, name: "💰 Händler", image: "images/haendler.png" },
   { min: 40, max: 59, name: "🏰 Adel", image: "images/adel.png" },
-  { min: 60, max: 69, name: "👑 Königlich", image: "images/koeniglich.png" },
+  { min: 60, max: 69, name: "👑 Königlich", image: "images/königlich.png" },
   { min: 70, max: 89, name: "⚔️ Kaiser", image: "images/kaiser.png" },
   { min: 90, max: Infinity, name: "🌟 Göttlich", image: "images/gott.png" },
 ];
