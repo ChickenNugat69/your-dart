@@ -129,11 +129,13 @@ function showRankStats() {
 }
 
 function showRankPlaceholder() {
-  profileCard.hidden = true;
-  rankImage.hidden = true;
+  profileCard.hidden = false;
+  rankImage.hidden = false;
   rankPlaceholder.hidden = true;
-  rankName.hidden = true;
-  rankName.innerText = "";
+  rankName.hidden = false;
+  rankImage.src = "images/rank_placeholder.png";
+  rankImage.alt = "Noch kein Rang";
+  rankName.innerText = "Noch kein Rang";
   averageStats.hidden = true;
 }
 
