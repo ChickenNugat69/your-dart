@@ -31,183 +31,145 @@ let nextDart = 1;
 let gameFinished = false;
 
 const ranks = [
-    { min: 0, max: 9, name: "🪤 Sklave", image: "images/sklave.jpeg" },
-    { min: 10, max: 19, name: "🤡 Hofnar", image: "images/hofnar.jpeg" },
-    { min: 20, max: 29, name: "🌾 Bauer", image: "images/bauer.jpeg" },
-    { min: 30, max: 39, name: "💰 Händler", image: "images/haendler.jpeg" },
-    { min: 40, max: 59, name: "🏰 Adel", image: "images/adel.jpeg" },
-    { min: 60, max: 69, name: "👑 Königlich", image: "images/koeniglich.jpeg" },
-    { min: 70, max: 89, name: "⚔️ Kaiser", image: "images/rank_placeholder.png" },
-    { min: 90, max: Infinity, name: "🌟 Göttlich", image: "images/rank_placeholder.png" }
+  { min: 0, max: 9, name: "🪤 Sklave", image: "images/sklave.png" },
+  { min: 10, max: 19, name: "🤡 Hofnar", image: "images/hofnar.png" },
+  { min: 20, max: 29, name: "🌾 Bauer", image: "images/bauer.png" },
+  { min: 30, max: 39, name: "💰 Händler", image: "images/haendler.png" },
+  { min: 40, max: 59, name: "🏰 Adel", image: "images/adel.png" },
+  { min: 60, max: 69, name: "👑 Königlich", image: "images/koeniglich.png" },
+  { min: 70, max: 89, name: "⚔️ Kaiser", image: "images/kaiser.png" },
+  { min: 90, max: Infinity, name: "🌟 Göttlich", image: "images/gott.png" },
 ];
 
-function getRank(currentAverage){
-
-    return ranks.find(function(rank){
-
-        return currentAverage >= rank.min && currentAverage <= rank.max;
-
-    }) || ranks[0];
-
+function getRank(currentAverage) {
+  return (
+    ranks.find(function (rank) {
+      return currentAverage >= rank.min && currentAverage <= rank.max;
+    }) || ranks[0]
+  );
 }
 
-function updateRank(currentAverage){
+function updateRank(currentAverage) {
+  let currentRank = getRank(currentAverage);
 
-    let currentRank = getRank(currentAverage);
-
-    rankName.innerText = currentRank.name;
-    rankImage.src = currentRank.image;
-    rankImage.alt = currentRank.name + " Rang";
-
+  rankName.innerText = currentRank.name;
+  rankImage.src = currentRank.image;
+  rankImage.alt = currentRank.name + " Rang";
 }
 
-function updateAverageDisplay(currentAverage){
-
-    average.innerText = currentAverage.toFixed(2);
-    updateRank(currentAverage);
-
+function updateAverageDisplay(currentAverage) {
+  average.innerText = currentAverage.toFixed(2);
+  updateRank(currentAverage);
 }
 
 const savedTheme = localStorage.getItem("theme") || "dark";
 const savedGamePoints = Number(localStorage.getItem("gamePoints"));
 
-function applyTheme(theme){
+function applyTheme(theme) {
+  let lightModeActive = theme === "light";
 
-    let lightModeActive = theme === "light";
-
-    document.body.classList.toggle("lightMode", lightModeActive);
-    themeToggle.setAttribute("aria-pressed", lightModeActive);
-    themeToggleText.innerText = lightModeActive ? "Light Mode" : "Dark Mode";
-    toggleIcon.innerText = lightModeActive ? "☀️" : "🌙";
-    localStorage.setItem("theme", theme);
-
+  document.body.classList.toggle("lightMode", lightModeActive);
+  themeToggle.setAttribute("aria-pressed", lightModeActive);
+  themeToggleText.innerText = lightModeActive ? "Light Mode" : "Dark Mode";
+  toggleIcon.innerText = lightModeActive ? "☀️" : "🌙";
+  localStorage.setItem("theme", theme);
 }
 
-function openSettings(){
-
-    settingsScreen.style.display = "flex";
-    settingsScreen.setAttribute("aria-hidden", "false");
-
+function openSettings() {
+  settingsScreen.style.display = "flex";
+  settingsScreen.setAttribute("aria-hidden", "false");
 }
 
-function closeSettings(){
-
-    settingsScreen.style.display = "none";
-    settingsScreen.setAttribute("aria-hidden", "true");
-
+function closeSettings() {
+  settingsScreen.style.display = "none";
+  settingsScreen.setAttribute("aria-hidden", "true");
 }
 
 applyTheme(savedTheme);
 
-if(savedGamePoints >= 101 && savedGamePoints <= 901 && savedGamePoints % 100 === 1){
-
-    selectedGamePoints = savedGamePoints;
-    gameSelect.value = savedGamePoints;
-    gamePoints.innerText = selectedGamePoints;
-    remainingPoints = selectedGamePoints;
-    remaining.innerText = selectedGamePoints;
-
+if (
+  savedGamePoints >= 101 &&
+  savedGamePoints <= 901 &&
+  savedGamePoints % 100 === 1
+) {
+  selectedGamePoints = savedGamePoints;
+  gameSelect.value = savedGamePoints;
+  gamePoints.innerText = selectedGamePoints;
+  remainingPoints = selectedGamePoints;
+  remaining.innerText = selectedGamePoints;
 }
 
-function updateButtonText(previewRemaining){
-
-    if(previewRemaining === 0){
-
-        submitButton.innerText = "Spiel beenden";
-
-    }else{
-
-        submitButton.innerText = "Bestätigen";
-
-    }
-
+function updateButtonText(previewRemaining) {
+  if (previewRemaining === 0) {
+    submitButton.innerText = "Spiel beenden";
+  } else {
+    submitButton.innerText = "Bestätigen";
+  }
 }
 
-function updatePreview(){
+function updatePreview() {
+  let score1 = Number(dart1.value);
+  let score2 = Number(dart2.value);
+  let score3 = Number(dart3.value);
 
-    let score1 = Number(dart1.value);
-    let score2 = Number(dart2.value);
-    let score3 = Number(dart3.value);
-
-    if(score1 > 60){
+  if (score1 > 60) {
     dart1.value = "";
     score1 = 0;
-}
+  }
 
-    if(score2 > 60){
+  if (score2 > 60) {
     dart2.value = "";
     score2 = 0;
-}
+  }
 
-    if(score3 > 60){
+  if (score3 > 60) {
     dart3.value = "";
     score3 = 0;
+  }
+
+  let previewScore = score1 + score2 + score3;
+
+  let previewRemaining = remainingPoints - previewScore;
+
+  updateButtonText(previewRemaining);
+
+  remaining.innerText = previewRemaining;
 }
 
-    let previewScore = score1 + score2 + score3;
+function processRound() {
+  let darts = [Number(dart1.value), Number(dart2.value), Number(dart3.value)];
+  let inputs = [dart1.value, dart2.value, dart3.value];
 
-    let previewRemaining = remainingPoints - previewScore;
+  let tempRemaining = remainingPoints;
+  let startRemaining = remainingPoints;
+  let usedDarts = 0;
+  let bust = false;
 
-    updateButtonText(previewRemaining);
+  for (let i = 0; i < darts.length; i++) {
+    let currentThrow = darts[i];
 
-    remaining.innerText = previewRemaining;
-
-}
-
-function processRound(){
-
-    let darts = [
-        Number(dart1.value),
-        Number(dart2.value),
-        Number(dart3.value)
-    ];
-    let inputs = [
-        dart1.value,
-        dart2.value,
-        dart3.value
-];
-
-    let tempRemaining = remainingPoints;
-    let startRemaining = remainingPoints;
-    let usedDarts = 0;
-    let bust = false;
-
-    for(let i = 0; i < darts.length; i++){
-
-        let currentThrow = darts[i];
-
-        if(inputs[i] !== ""){
-
-        usedDarts++;
-
+    if (inputs[i] !== "") {
+      usedDarts++;
     }
 
+    tempRemaining -= currentThrow;
 
+    if (tempRemaining < 0) {
+      bust = true;
 
-        tempRemaining -= currentThrow;
-        
+      console.log("Bust!");
 
-        if(tempRemaining < 0){
-
-        bust = true;
-
-        console.log("Bust!");
-
-    break;
-
-}
-
-        console.log("Rest:", tempRemaining);
+      break;
     }
 
-    if(bust){
+    console.log("Rest:", tempRemaining);
+  }
 
-         totalDarts += usedDarts;
+  if (bust) {
+    totalDarts += usedDarts;
     let currentAverage = (totalPoints / totalDarts) * 3;
     updateAverageDisplay(currentAverage);
-
-}else{
-
+  } else {
     remainingPoints = tempRemaining;
     remaining.innerText = remainingPoints;
 
@@ -218,118 +180,100 @@ function processRound(){
 
     let currentAverage = (totalPoints / totalDarts) * 3;
     updateAverageDisplay(currentAverage);
-
-}
-if(remainingPoints === 0){
-
+  }
+  if (remainingPoints === 0) {
     gameFinished = true;
-}
-    return {
+  }
+  return {
     usedDarts: usedDarts,
-    bust: bust
-};
-
+    bust: bust,
+  };
 }
 
-function resetGame(){
+function resetGame() {
+  remainingPoints = selectedGamePoints;
+  gamePoints.innerText = selectedGamePoints;
+  remaining.innerText = selectedGamePoints;
 
-    remainingPoints = selectedGamePoints;
-    gamePoints.innerText = selectedGamePoints;
-    remaining.innerText = selectedGamePoints;
+  totalPoints = 0;
+  totalDarts = 0;
 
-    totalPoints = 0;
-    totalDarts = 0;
+  updateAverageDisplay(0);
+  nextDart = 1;
 
-    updateAverageDisplay(0);
-    nextDart = 1;
+  dart1.placeholder = 1;
+  dart2.placeholder = 2;
+  dart3.placeholder = 3;
 
-    dart1.placeholder = 1;
-    dart2.placeholder = 2;
-    dart3.placeholder = 3;
+  dart1.value = "";
+  dart2.value = "";
+  dart3.value = "";
 
-    dart1.value = "";
-    dart2.value = "";
-    dart3.value = "";
+  updateButtonText(remainingPoints);
+  gameFinished = false;
+  winScreen.style.display = "none";
 
-    updateButtonText(remainingPoints);
-    gameFinished = false;
-    winScreen.style.display = "none";
+  submitButton.disabled = false;
 
-    submitButton.disabled = false;
-
-    updatePreview();
+  updatePreview();
 }
 
-submitButton.addEventListener("click", function(){
-        
-    let result = processRound();
+submitButton.addEventListener("click", function () {
+  let result = processRound();
 
-if(remainingPoints === 0){
-
+  if (remainingPoints === 0) {
     winAverage.innerText = average.innerText;
     winDarts.innerText = totalDarts;
 
     winScreen.style.display = "flex";
     submitButton.disabled = true;
     return;
+  }
+  if (result.bust) {
+    nextDart += result.usedDarts;
+  } else {
+    nextDart += 3;
+  }
+  dart1.placeholder = nextDart;
+  dart2.placeholder = nextDart + 1;
+  dart3.placeholder = nextDart + 2;
 
-}
-    if(result.bust){
+  dart1.value = "";
+  dart2.value = "";
+  dart3.value = "";
 
-        nextDart += result.usedDarts;
-
-    }else{
-
-        nextDart += 3;
-    }
-        dart1.placeholder = nextDart;
-        dart2.placeholder = nextDart + 1;
-        dart3.placeholder = nextDart + 2;
-
-    dart1.value = "";
-    dart2.value = "";
-    dart3.value = "";
-
-    updatePreview();
+  updatePreview();
 });
 
 dart1.addEventListener("input", updatePreview);
 dart2.addEventListener("input", updatePreview);
 dart3.addEventListener("input", updatePreview);
 
-newGameButton.addEventListener("click", function(){
+newGameButton.addEventListener("click", function () {
+  winScreen.style.display = "none";
 
-    winScreen.style.display = "none";
-
-    resetGame();
-
+  resetGame();
 });
 
 settingsButton.addEventListener("click", openSettings);
 closeSettingsButton.addEventListener("click", closeSettings);
 
-settingsScreen.addEventListener("click", function(event){
-
-    if(event.target === settingsScreen){
-
-        closeSettings();
-
-    }
-
+settingsScreen.addEventListener("click", function (event) {
+  if (event.target === settingsScreen) {
+    closeSettings();
+  }
 });
 
-themeToggle.addEventListener("click", function(){
+themeToggle.addEventListener("click", function () {
+  let nextTheme = document.body.classList.contains("lightMode")
+    ? "dark"
+    : "light";
 
-    let nextTheme = document.body.classList.contains("lightMode") ? "dark" : "light";
-
-    applyTheme(nextTheme);
-
+  applyTheme(nextTheme);
 });
 
-gameSelect.addEventListener("change", function(){
-
-    selectedGamePoints = Number(gameSelect.value);
-    localStorage.setItem("gamePoints", selectedGamePoints);
-    resetGame();
-
+gameSelect.addEventListener("change", function () {
+  selectedGamePoints = Number(gameSelect.value);
+  localStorage.setItem("gamePoints", selectedGamePoints);
+  resetGame();
 });
