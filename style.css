@@ -468,3 +468,137 @@ section{
     font-weight:bold;
     cursor:pointer;
 }
+
+@media (max-width: 520px){
+    body{
+        min-height:100dvh;
+        padding:66px 8px 8px;
+        overflow:hidden;
+    }
+
+    main{
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        height:calc(100dvh - 74px);
+    }
+
+    header{
+        padding:8px 10px;
+    }
+
+    header h1{
+        font-size:22px;
+    }
+
+    header button{
+        width:40px;
+        height:40px;
+        border-radius:10px;
+        font-size:20px;
+    }
+
+    section{
+        margin-bottom:0;
+        padding:10px;
+        border-radius:14px;
+    }
+
+    .profileCard{
+        flex:0 1 auto;
+    }
+
+    .profileImage{
+        width:min(78px, 28vw);
+        margin-bottom:4px;
+    }
+
+    .rankName{
+        margin-bottom:6px;
+        font-size:20px;
+    }
+
+    .profileStats{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        border-width:1px;
+    }
+
+    .profileStat{
+        gap:4px;
+        padding:5px 4px;
+        font-size:12px;
+    }
+
+    .profileStat:nth-child(odd){
+        border-right:1px solid var(--muted);
+    }
+
+    .profileStat:nth-child(-n + 2){
+        border-bottom:1px solid var(--muted);
+    }
+
+    .profileStat:not(:last-child){
+        border-bottom:0;
+    }
+
+    .profileStat:nth-child(-n + 2){
+        border-bottom:1px solid var(--muted);
+    }
+
+    .game{
+        flex:0 0 auto;
+        gap:8px;
+    }
+
+    .game h3{
+        margin-bottom:2px;
+        font-size:14px;
+    }
+
+    .box{
+        width:50%;
+        padding:8px;
+        border-radius:12px;
+    }
+
+    .box p{
+        margin-top:2px;
+        font-size:24px;
+    }
+
+    .throws{
+        flex:1 1 auto;
+        min-height:0;
+        display:flex;
+        flex-direction:column;
+    }
+
+    .dartDisplays{
+        gap:6px;
+        margin-bottom:8px;
+    }
+
+    .dartDisplay{
+        min-height:36px;
+        border-radius:8px;
+        font-size:16px;
+    }
+
+    .scoreKeyboard{
+        flex:1 1 auto;
+        min-height:0;
+        gap:4px;
+    }
+
+    .scoreKeyboard button{
+        min-height:0;
+        height:auto;
+        font-size:clamp(13px, 4.1vw, 17px);
+        border-width:1px;
+        border-radius:7px;
+    }
+
+    .scoreKeyboard .multiplierButton{
+        font-size:clamp(9px, 2.8vw, 12px);
+    }
+}

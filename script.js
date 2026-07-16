@@ -8,6 +8,7 @@ const rankImage = document.getElementById("rankImage");
 const rankPlaceholder = document.getElementById("rankPlaceholder");
 const rankName = document.getElementById("rankName");
 const averageStats = document.getElementById("averageStats");
+const profileCard = document.querySelector(".profileCard");
 
 const dart1 = document.getElementById("dart1");
 const dart2 = document.getElementById("dart2");
@@ -91,6 +92,7 @@ function saveProfileRecords() {
 }
 
 function showRankStats() {
+  profileCard.hidden = false;
   rankPlaceholder.hidden = true;
   rankImage.hidden = false;
   rankName.hidden = false;
@@ -99,7 +101,8 @@ function showRankStats() {
 
 function updateAverageDisplay() {
   if (!hasConfirmedThrow) {
-    rankPlaceholder.hidden = false;
+    profileCard.hidden = true;
+    rankPlaceholder.hidden = true;
     rankImage.hidden = true;
     rankName.hidden = true;
     averageStats.hidden = true;
@@ -150,7 +153,8 @@ function updatePreview() {
 
 function updateDartDisplays() {
   dartDisplays.forEach((display, index) => {
-    display.innerText = currentDarts[index] ?? `Wurf ${index + 1}`;
+    display.innerText = currentDarts[index] ?? `Wurf ${nextDart + index}`;
+    display.setAttribute("aria-label", `Wurf ${nextDart + index}`);
     display.classList.toggle("isFilled", currentDarts[index] !== undefined);
   });
   updatePreview();
@@ -255,6 +259,7 @@ function processRound() {
 
     if (tempRemaining < 0) {
       bust = true;
+      usedDarts = i + 1;
       break;
     }
   }
