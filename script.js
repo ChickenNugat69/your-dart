@@ -31,12 +31,12 @@ let nextDart = 1;
 let gameFinished = false;
 
 const ranks = [
-    { min: 0, max: 9, name: "🪤 Sklave", image: "images/rank_placeholder.png" },
-    { min: 10, max: 19, name: "🤡 Hofnar", image: "images/rank_placeholder.png" },
-    { min: 20, max: 29, name: "🌾 Bauer", image: "images/rank_placeholder.png" },
-    { min: 30, max: 39, name: "💰 Händler", image: "images/rank_placeholder.png" },
-    { min: 40, max: 59, name: "🏰 Adel", image: "images/rank_placeholder.png" },
-    { min: 60, max: 69, name: "👑 Königlich", image: "images/rank_placeholder.png" },
+    { min: 0, max: 9, name: "🪤 Sklave", image: "images/sklave.jpeg" },
+    { min: 10, max: 19, name: "🤡 Hofnar", image: "images/hofnar.jpeg" },
+    { min: 20, max: 29, name: "🌾 Bauer", image: "images/bauer.jpeg" },
+    { min: 30, max: 39, name: "💰 Händler", image: "images/haendler.jpeg" },
+    { min: 40, max: 59, name: "🏰 Adel", image: "images/adel.jpeg" },
+    { min: 60, max: 69, name: "👑 Königlich", image: "images/koeniglich.jpeg" },
     { min: 70, max: 89, name: "⚔️ Kaiser", image: "images/rank_placeholder.png" },
     { min: 90, max: Infinity, name: "🌟 Göttlich", image: "images/rank_placeholder.png" }
 ];
