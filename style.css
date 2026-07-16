@@ -108,7 +108,7 @@ section{
 }
 
 .profileImage{
-    width:min(1080px, 100%);
+    width:min(420px, 100%);
     aspect-ratio:1 / 1;
     object-fit:contain;
     display:block;
