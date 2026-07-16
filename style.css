@@ -1,0 +1,234 @@
+/* Grundlayout */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#121212;
+    color:white;
+    font-family:Arial, Helvetica, sans-serif;
+    padding:20px;
+}
+
+/* Header */
+
+header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+header h1{
+    font-size:28px;
+}
+
+header button{
+    width:45px;
+    height:45px;
+    border:none;
+    border-radius:12px;
+    background:#1f1f1f;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+}
+
+/* Karten */
+
+section{
+    background:#1f1f1f;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+/* Rang */
+
+.rank{
+    text-align:center;
+}
+
+.rank img{
+    width:140px;
+    margin-bottom:15px;
+}
+
+.rank h2{
+    margin-bottom:10px;
+}
+
+/* Spielbereich */
+
+.game{
+    display:flex;
+    justify-content:space-between;
+    text-align:center;
+}
+
+.game h3{
+    margin-bottom:10px;
+}
+
+/* Eingabe */
+
+.throws{
+    text-align:center;
+}
+
+.throws input{
+    width:70px;
+    height:55px;
+    margin:10px 5px;
+    border:none;
+    border-radius:10px;
+    background:#2c2c2c;
+    color:white;
+    font-size:22px;
+    text-align:center;
+}
+
+.throws button{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#00b894;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.card{
+    box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+
+.box{
+    width:45%;
+    background:#2a2a2a;
+    padding:20px;
+    border-radius:15px;
+}
+
+.box p{
+    font-size:32px;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.average{
+    margin-top:15px;
+    font-size:18px;
+}
+
+.average span{
+    display:block;
+    margin-top:8px;
+    font-size:34px;
+    font-weight:bold;
+    color:#00d084;
+}
+
+.throwCounter{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    margin-bottom:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.inputs{
+    display:flex;
+    justify-content:space-between;
+}
+
+.rank img{
+    width: 300px;
+}
+
+.winScreen{
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.6);
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+
+}
+
+.winBox{
+
+    background: #2b2b2b;
+    color: white;
+
+    width: 320px;
+
+    padding: 30px;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+
+}
+
+.stats{
+
+    display: flex;
+
+    justify-content: space-around;
+
+    margin: 30px 0;
+
+}
+
+.stat p{
+
+    margin: 0;
+
+    color: #bbbbbb;
+
+    font-size: 15px;
+
+}
+
+.stat span{
+
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 34px;
+
+    font-weight: bold;
+
+}
+
+#newGameButton{
+
+    width: 100%;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+}

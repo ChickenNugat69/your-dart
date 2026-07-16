@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Darts</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <button>⚙</button>
+
+        <h1>Your Darts</h1>
+
+        <button>👤</button>
+    </header>
+
+    <main>
+
+    <!-- Rang -->
+    <section class="card rank">
+
+       <img id="rankImage" src="images/rank_placeholder.png" alt="Rang">
+
+        <h2>Bronze I</h2>
+
+        <p class="average">
+            Average
+            <span id="average">0.00</span>
+        </p>
+
+    </section>
+
+    <!-- Punkte -->
+    <section class="card game">
+
+        <div class="box">
+
+            <h3>Game</h3>
+
+            <p id="gamePoints">501</p>
+
+        </div>
+
+        <div class="box">
+
+            <h3>Remaining</h3>
+
+            <p id="remaining">501</p>
+
+        </div>
+
+    </section>
+
+    <!-- Würfe -->
+    <section class="card throws">
+
+        <div class="inputs">
+
+            <input id="dart1" type="number" placeholder="1" min="0" max="60">
+            <input id="dart2" type="number" placeholder="2" min="0" max="60">
+            <input id="dart3" type="number" placeholder="3" min="0" max="60">
+
+        </div>
+
+        <button id="submitThrow">
+            Bestätigen
+        </button>
+
+    </section>
+
+</main>
+
+<div id="winScreen" class="winScreen">
+
+    <div class="winBox">
+
+        <h2>🏆 Gewonnen!</h2>
+
+        <div class="stats">
+
+            <div class="stat">
+                <p>Average</p>
+                <span id="winAverage"></span>
+            </div>
+
+            <div class="stat">
+                <p>Darts</p>
+                <span id="winDarts"></span>
+            </div>
+
+        </div>
+
+        <button id="newGameButton">
+            Neues Spiel
+        </button>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
