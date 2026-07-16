@@ -46,6 +46,7 @@ let hasConfirmedThrow = savedTotalDarts > 0;
 
 let nextDart = 1;
 let gameFinished = false;
+let inputLocked = false;
 let currentDarts = [];
 let redoDarts = [];
 let multiplierModeIndex = 0;
@@ -100,9 +101,9 @@ function showRankStats() {
 }
 
 function showRankPlaceholder() {
-  profileCard.hidden = false;
+  profileCard.hidden = true;
   rankImage.hidden = true;
-  rankPlaceholder.hidden = false;
+  rankPlaceholder.hidden = true;
   rankName.hidden = true;
   averageStats.hidden = true;
 }
@@ -152,7 +153,10 @@ function getCurrentThrowScore() {
 }
 
 function updatePreview() {
-  remaining.innerText = remainingPoints - getCurrentThrowScore();
+  let previewRemaining = remainingPoints - getCurrentThrowScore();
+
+  remaining.classList.toggle("isBust", previewRemaining < 0);
+  remaining.innerText = previewRemaining < 0 ? "Bust" : previewRemaining;
 }
 
 function updateDartDisplays() {
@@ -216,7 +220,7 @@ function toggleMultiplierMode() {
 }
 
 function addDart(score) {
-  if (gameFinished || currentDarts.length >= 3) {
+  if (gameFinished || inputLocked || currentDarts.length >= 3) {
     return;
   }
 
@@ -224,13 +228,13 @@ function addDart(score) {
   redoDarts = [];
   updateDartDisplays();
 
-  if (currentDarts.length === 3) {
+  if (remainingPoints - getCurrentThrowScore() <= 0 || currentDarts.length === 3) {
     confirmCurrentRound();
   }
 }
 
 function undoDart() {
-  if (gameFinished || currentDarts.length === 0) {
+  if (gameFinished || inputLocked || currentDarts.length === 0) {
     return;
   }
 
@@ -239,7 +243,7 @@ function undoDart() {
 }
 
 function redoDart() {
-  if (gameFinished || redoDarts.length === 0 || currentDarts.length >= 3) {
+  if (gameFinished || inputLocked || redoDarts.length === 0 || currentDarts.length >= 3) {
     return;
   }
 
@@ -282,9 +286,9 @@ function processRound() {
     let roundScore = startRemaining - tempRemaining;
 
     roundTotalPoints += roundScore;
-    roundTotalDarts += 3;
+    roundTotalDarts += usedDarts;
     savedTotalPoints += roundScore;
-    savedTotalDarts += 3;
+    savedTotalDarts += usedDarts;
 
     if (roundScore > savedTopScore) {
       savedTopScore = roundScore;
@@ -315,8 +319,38 @@ function clearCurrentThrow() {
   updateDartDisplays();
 }
 
+function setKeyboardDisabled(disabled) {
+  scoreKeyboard.querySelectorAll("button").forEach((button) => {
+    button.disabled = disabled;
+  });
+}
+
+function showBust(result) {
+  inputLocked = true;
+  setKeyboardDisabled(true);
+  remaining.classList.add("isBust");
+  remaining.innerText = "Bust";
+
+  let bustDisplay = dartDisplays[result.usedDarts - 1];
+  bustDisplay.innerText = "Bust";
+  bustDisplay.classList.add("isBust");
+
+  window.setTimeout(() => {
+    nextDart += result.usedDarts;
+    inputLocked = false;
+    setKeyboardDisabled(false);
+    dartDisplays.forEach((display) => display.classList.remove("isBust"));
+    clearCurrentThrow();
+  }, 2000);
+}
+
 function confirmCurrentRound() {
   let result = processRound();
+
+  if (result.bust) {
+    showBust(result);
+    return;
+  }
 
   if (remainingPoints === 0) {
     winAverage.innerText = average.innerText;
@@ -338,6 +372,9 @@ function resetGame() {
   roundTotalDarts = 0;
   nextDart = 1;
   gameFinished = false;
+  inputLocked = false;
+  setKeyboardDisabled(false);
+  remaining.classList.remove("isBust");
   winScreen.style.display = "none";
   clearCurrentThrow();
   updateAverageDisplay();
