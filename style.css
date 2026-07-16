@@ -42,6 +42,11 @@ body{
     transition:background .2s ease, color .2s ease;
 }
 
+main{
+    width:min(720px, 100%);
+    margin:0 auto;
+}
+
 /* Header */
 
 header{
@@ -83,14 +88,16 @@ section{
     margin-bottom:20px;
 }
 
-/* Rang */
+/* Profil */
 
-.rank{
+.profileCard{
     text-align:center;
 }
 
-.rank img{
-    width:140px;
+.profileImage{
+    width:min(360px, 100%);
+    aspect-ratio:1 / 1;
+    object-fit:contain;
     margin-bottom:15px;
 }
 
@@ -107,14 +114,39 @@ section{
     font-weight:bold;
 }
 
-.averageStats{
+.profileStats{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:16px;
+    gap:0;
+    overflow:hidden;
+    border:2px solid var(--muted);
+    border-radius:10px;
 }
 
-.rank h2{
+.profileStat{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    padding:12px 8px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.profileStat:nth-child(odd){
+    border-right:2px solid var(--muted);
+}
+
+.profileStat:nth-child(-n + 2){
+    border-bottom:2px solid var(--muted);
+}
+
+.statValue{
+    color:var(--accent-bright);
+}
+
+.rankName{
     margin-bottom:10px;
+    font-size:34px;
 }
 
 /* Spielbereich */
@@ -135,28 +167,61 @@ section{
     text-align:center;
 }
 
-.throws input{
-    width:70px;
-    height:55px;
-    margin:10px 5px;
-    border:none;
-    border-radius:10px;
-    background:var(--input-bg);
-    color:var(--text);
-    font-size:22px;
-    text-align:center;
+.dartDisplays{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px;
+    margin-bottom:22px;
 }
 
-.throws button{
-    width:100%;
-    margin-top:20px;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    background:var(--accent);
-    color:white;
-    font-size:18px;
+.dartDisplay{
+    min-height:54px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid var(--muted);
+    border-radius:10px;
+    background:var(--input-bg);
+    color:var(--muted);
+    font-size:22px;
+    font-weight:bold;
+}
+
+.dartDisplay.isFilled{
+    color:var(--text);
+    border-color:var(--accent);
+}
+
+.scoreKeyboard{
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
+    gap:6px;
+}
+
+.scoreKeyboard button{
+    min-height:48px;
+    border:2px solid var(--muted);
+    border-radius:8px;
+    background:var(--box-bg);
+    color:var(--text);
+    font-size:20px;
+    font-weight:bold;
     cursor:pointer;
+}
+
+.scoreKeyboard button:hover,
+.scoreKeyboard button:focus-visible{
+    border-color:var(--accent);
+    outline:none;
+}
+
+.scoreKeyboard .keyboardUtility{
+    background:var(--input-bg);
+}
+
+.scoreKeyboard .multiplierButton{
+    color:var(--accent-bright);
+    font-size:15px;
 }
 
 .card{
@@ -198,19 +263,34 @@ section{
     font-weight:bold;
 }
 
-.inputs{
-    display:flex;
-    justify-content:space-between;
-}
+@media (max-width: 520px){
+    body{
+        padding-left:10px;
+        padding-right:10px;
+    }
 
-.rank img{
-    width: 300px;
-    max-width:100%;
-}
-
-@media (max-width: 420px){
-    .averageStats{
+    .profileStats{
         grid-template-columns:1fr;
+    }
+
+    .profileStat:nth-child(odd){
+        border-right:none;
+    }
+
+    .profileStat:not(:last-child){
+        border-bottom:2px solid var(--muted);
+    }
+
+    .dartDisplays{
+        gap:8px;
+    }
+
+    .scoreKeyboard button{
+        font-size:17px;
+    }
+
+    .scoreKeyboard .multiplierButton{
+        font-size:12px;
     }
 }
 

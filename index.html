@@ -20,24 +20,34 @@
 
     <main>
 
-    <!-- Rang -->
-    <section class="card rank">
+    <!-- Profil / Rang -->
+    <section class="card profileCard">
 
        <div id="rankPlaceholder" class="rankPlaceholder">Your Darts</div>
 
-       <img id="rankImage" src="images/rank_placeholder.png" alt="Rang" hidden>
+       <img id="rankImage" class="profileImage" src="images/rank_placeholder.png" alt="Rang" hidden>
 
         <h2 id="rankName" class="rankName" hidden></h2>
 
-        <div id="averageStats" class="averageStats" hidden>
-            <p class="average">
-                Rang Average
-                <span id="average">0.00</span>
+        <div id="averageStats" class="profileStats" hidden>
+            <p class="profileStat">
+                <span class="statLabel">Rang Avg:</span>
+                <span id="average" class="statValue">0.00</span>
             </p>
 
-            <p class="average">
-                Runden Average
-                <span id="roundAverage">0.00</span>
+            <p class="profileStat">
+                <span class="statLabel">Runden Avg:</span>
+                <span id="roundAverage" class="statValue">0.00</span>
+            </p>
+
+            <p class="profileStat">
+                <span class="statLabel">Best Finish:</span>
+                <span id="bestFinish" class="statValue">0</span>
+            </p>
+
+            <p class="profileStat">
+                <span class="statLabel">Top Score:</span>
+                <span id="topScore" class="statValue">0</span>
             </p>
         </div>
 
@@ -67,22 +77,17 @@
     <!-- Würfe -->
     <section class="card throws">
 
-        <div class="inputs">
-
-            <input id="dart1" type="number" placeholder="1" min="0" max="60">
-            <input id="dart2" type="number" placeholder="2" min="0" max="60">
-            <input id="dart3" type="number" placeholder="3" min="0" max="60">
-
+        <div class="dartDisplays" aria-label="Aktuelle Aufnahme">
+            <output id="dart1" class="dartDisplay" aria-label="Wurf 1">Wurf 1</output>
+            <output id="dart2" class="dartDisplay" aria-label="Wurf 2">Wurf 2</output>
+            <output id="dart3" class="dartDisplay" aria-label="Wurf 3">Wurf 3</output>
         </div>
 
-        <button id="submitThrow">
-            Bestätigen
-        </button>
+        <div id="scoreKeyboard" class="scoreKeyboard" aria-label="Score Tastatur"></div>
 
     </section>
 
 </main>
-
 <div id="winScreen" class="winScreen">
 
     <div class="winBox">
