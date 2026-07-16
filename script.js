@@ -1,8 +1,11 @@
 const remaining = document.getElementById("remaining");
 const gamePoints = document.getElementById("gamePoints");
 const average = document.getElementById("average");
+const roundAverage = document.getElementById("roundAverage");
 const rankImage = document.getElementById("rankImage");
+const rankPlaceholder = document.getElementById("rankPlaceholder");
 const rankName = document.getElementById("rankName");
+const averageStats = document.getElementById("averageStats");
 
 const dart1 = document.getElementById("dart1");
 const dart2 = document.getElementById("dart2");
@@ -24,8 +27,11 @@ const gameSelect = document.getElementById("gameSelect");
 
 let selectedGamePoints = 501;
 let remainingPoints = selectedGamePoints;
-let totalPoints = 0;
-let totalDarts = 0;
+let roundTotalPoints = 0;
+let roundTotalDarts = 0;
+let savedTotalPoints = Number(localStorage.getItem("rankTotalPoints")) || 0;
+let savedTotalDarts = Number(localStorage.getItem("rankTotalDarts")) || 0;
+let hasConfirmedThrow = savedTotalDarts > 0;
 
 let nextDart = 1;
 let gameFinished = false;
@@ -57,9 +63,42 @@ function updateRank(currentAverage) {
   rankImage.alt = currentRank.name + " Rang";
 }
 
-function updateAverageDisplay(currentAverage) {
-  average.innerText = currentAverage.toFixed(2);
-  updateRank(currentAverage);
+function calculateAverage(points, darts) {
+  if (darts === 0) {
+    return 0;
+  }
+
+  return (points / darts) * 3;
+}
+
+function saveRankAverage() {
+  localStorage.setItem("rankTotalPoints", savedTotalPoints);
+  localStorage.setItem("rankTotalDarts", savedTotalDarts);
+}
+
+function showRankStats() {
+  rankPlaceholder.hidden = true;
+  rankImage.hidden = false;
+  rankName.hidden = false;
+  averageStats.hidden = false;
+}
+
+function updateAverageDisplay() {
+  if (!hasConfirmedThrow) {
+    rankPlaceholder.hidden = false;
+    rankImage.hidden = true;
+    rankName.hidden = true;
+    averageStats.hidden = true;
+    return;
+  }
+
+  let rankAverage = calculateAverage(savedTotalPoints, savedTotalDarts);
+  let currentRoundAverage = calculateAverage(roundTotalPoints, roundTotalDarts);
+
+  showRankStats();
+  average.innerText = rankAverage.toFixed(2);
+  roundAverage.innerText = currentRoundAverage.toFixed(2);
+  updateRank(rankAverage);
 }
 
 const savedTheme = localStorage.getItem("theme") || "dark";
@@ -98,6 +137,8 @@ if (
   remainingPoints = selectedGamePoints;
   remaining.innerText = selectedGamePoints;
 }
+
+updateAverageDisplay();
 
 function updateButtonText(previewRemaining) {
   if (previewRemaining === 0) {
@@ -165,22 +206,27 @@ function processRound() {
     console.log("Rest:", tempRemaining);
   }
 
+  hasConfirmedThrow = true;
+
   if (bust) {
-    totalDarts += usedDarts;
-    let currentAverage = (totalPoints / totalDarts) * 3;
-    updateAverageDisplay(currentAverage);
+    roundTotalDarts += usedDarts;
+    savedTotalDarts += usedDarts;
+    saveRankAverage();
+    updateAverageDisplay();
   } else {
     remainingPoints = tempRemaining;
     remaining.innerText = remainingPoints;
 
     let roundScore = startRemaining - tempRemaining;
 
-    totalPoints += roundScore;
-    totalDarts += 3;
-
-    let currentAverage = (totalPoints / totalDarts) * 3;
-    updateAverageDisplay(currentAverage);
+    roundTotalPoints += roundScore;
+    roundTotalDarts += 3;
+    savedTotalPoints += roundScore;
+    savedTotalDarts += 3;
+    saveRankAverage();
+    updateAverageDisplay();
   }
+
   if (remainingPoints === 0) {
     gameFinished = true;
   }
@@ -195,10 +241,10 @@ function resetGame() {
   gamePoints.innerText = selectedGamePoints;
   remaining.innerText = selectedGamePoints;
 
-  totalPoints = 0;
-  totalDarts = 0;
+  roundTotalPoints = 0;
+  roundTotalDarts = 0;
 
-  updateAverageDisplay(0);
+  updateAverageDisplay();
   nextDart = 1;
 
   dart1.placeholder = 1;
@@ -223,7 +269,7 @@ submitButton.addEventListener("click", function () {
 
   if (remainingPoints === 0) {
     winAverage.innerText = average.innerText;
-    winDarts.innerText = totalDarts;
+    winDarts.innerText = roundTotalDarts;
 
     winScreen.style.display = "flex";
     submitButton.disabled = true;
