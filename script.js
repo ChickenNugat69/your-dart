@@ -12,6 +12,12 @@ const winScreen = document.getElementById("winScreen");
 const winAverage = document.getElementById("winAverage");
 const winDarts = document.getElementById("winDarts");
 const newGameButton = document.getElementById("newGameButton");
+const settingsButton = document.getElementById("settingsButton");
+const settingsScreen = document.getElementById("settingsScreen");
+const closeSettingsButton = document.getElementById("closeSettingsButton");
+const themeToggle = document.getElementById("themeToggle");
+const themeToggleText = document.getElementById("themeToggleText");
+const toggleIcon = document.querySelector(".toggleIcon");
 
 let remainingPoints = 501;
 let totalPoints = 0;
@@ -19,6 +25,36 @@ let totalDarts = 0;
 
 let nextDart = 1;
 let gameFinished = false;
+
+const savedTheme = localStorage.getItem("theme") || "dark";
+
+function applyTheme(theme){
+
+    let lightModeActive = theme === "light";
+
+    document.body.classList.toggle("lightMode", lightModeActive);
+    themeToggle.setAttribute("aria-pressed", lightModeActive);
+    themeToggleText.innerText = lightModeActive ? "Light Mode" : "Dark Mode";
+    toggleIcon.innerText = lightModeActive ? "☀️" : "🌙";
+    localStorage.setItem("theme", theme);
+
+}
+
+function openSettings(){
+
+    settingsScreen.style.display = "flex";
+    settingsScreen.setAttribute("aria-hidden", "false");
+
+}
+
+function closeSettings(){
+
+    settingsScreen.style.display = "none";
+    settingsScreen.setAttribute("aria-hidden", "true");
+
+}
+
+applyTheme(savedTheme);
 
 function updateButtonText(previewRemaining){
 
@@ -212,5 +248,26 @@ newGameButton.addEventListener("click", function(){
     winScreen.style.display = "none";
 
     resetGame();
+
+});
+
+settingsButton.addEventListener("click", openSettings);
+closeSettingsButton.addEventListener("click", closeSettings);
+
+settingsScreen.addEventListener("click", function(event){
+
+    if(event.target === settingsScreen){
+
+        closeSettings();
+
+    }
+
+});
+
+themeToggle.addEventListener("click", function(){
+
+    let nextTheme = document.body.classList.contains("lightMode") ? "dark" : "light";
+
+    applyTheme(nextTheme);
 
 });

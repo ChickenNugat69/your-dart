@@ -11,11 +11,11 @@
 <body>
 
     <header>
-        <button>⚙</button>
+        <button id="settingsButton" aria-label="Einstellungen öffnen">⚙</button>
 
         <h1>Your Darts</h1>
 
-        <button>👤</button>
+        <button aria-label="Profil">👤</button>
     </header>
 
     <main>
@@ -97,6 +97,31 @@
         <button id="newGameButton">
             Neues Spiel
         </button>
+
+    </div>
+
+</div>
+
+<div id="settingsScreen" class="settingsScreen" aria-hidden="true">
+
+    <div class="settingsBox" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+
+        <div class="settingsHeader">
+            <h2 id="settingsTitle">Einstellungen</h2>
+            <button id="closeSettingsButton" aria-label="Einstellungen schließen">×</button>
+        </div>
+
+        <div class="settingsOption">
+            <div>
+                <h3>Design</h3>
+                <p>Wechsle zwischen Light Mode und Dark Mode.</p>
+            </div>
+
+            <button id="themeToggle" class="themeToggle" type="button" aria-pressed="false">
+                <span class="toggleIcon">🌙</span>
+                <span id="themeToggleText">Dark Mode</span>
+            </button>
+        </div>
 
     </div>
 
