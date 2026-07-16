@@ -2,6 +2,8 @@ const remaining = document.getElementById("remaining");
 const gamePoints = document.getElementById("gamePoints");
 const average = document.getElementById("average");
 const roundAverage = document.getElementById("roundAverage");
+const bestFinishDisplay = document.getElementById("bestFinish");
+const topScoreDisplay = document.getElementById("topScore");
 const rankImage = document.getElementById("rankImage");
 const rankPlaceholder = document.getElementById("rankPlaceholder");
 const rankName = document.getElementById("rankName");
@@ -10,8 +12,8 @@ const averageStats = document.getElementById("averageStats");
 const dart1 = document.getElementById("dart1");
 const dart2 = document.getElementById("dart2");
 const dart3 = document.getElementById("dart3");
-
-const submitButton = document.getElementById("submitThrow");
+const dartDisplays = [dart1, dart2, dart3];
+const scoreKeyboard = document.getElementById("scoreKeyboard");
 
 const winScreen = document.getElementById("winScreen");
 const winAverage = document.getElementById("winAverage");
@@ -25,16 +27,27 @@ const themeToggleText = document.getElementById("themeToggleText");
 const toggleIcon = document.querySelector(".toggleIcon");
 const gameSelect = document.getElementById("gameSelect");
 
+const multiplierModes = [
+  { name: "Single", marker: "●○○", factor: 1, prefix: "" },
+  { name: "Double", marker: "○●○", factor: 2, prefix: "D" },
+  { name: "Triple", marker: "○○●", factor: 3, prefix: "T" },
+];
+
 let selectedGamePoints = 501;
 let remainingPoints = selectedGamePoints;
 let roundTotalPoints = 0;
 let roundTotalDarts = 0;
 let savedTotalPoints = Number(localStorage.getItem("rankTotalPoints")) || 0;
 let savedTotalDarts = Number(localStorage.getItem("rankTotalDarts")) || 0;
+let savedBestFinish = Number(localStorage.getItem("bestFinish")) || 0;
+let savedTopScore = Number(localStorage.getItem("topScore")) || 0;
 let hasConfirmedThrow = savedTotalDarts > 0;
 
 let nextDart = 1;
 let gameFinished = false;
+let currentDarts = [];
+let redoDarts = [];
+let multiplierModeIndex = 0;
 
 const ranks = [
   { min: 0, max: 9, name: "🪤 Sklave", image: "images/sklave.png" },
@@ -48,11 +61,7 @@ const ranks = [
 ];
 
 function getRank(currentAverage) {
-  return (
-    ranks.find(function (rank) {
-      return currentAverage >= rank.min && currentAverage <= rank.max;
-    }) || ranks[0]
-  );
+  return ranks.find((rank) => currentAverage >= rank.min && currentAverage <= rank.max) || ranks[0];
 }
 
 function updateRank(currentAverage) {
@@ -74,6 +83,11 @@ function calculateAverage(points, darts) {
 function saveRankAverage() {
   localStorage.setItem("rankTotalPoints", savedTotalPoints);
   localStorage.setItem("rankTotalDarts", savedTotalDarts);
+}
+
+function saveProfileRecords() {
+  localStorage.setItem("bestFinish", savedBestFinish);
+  localStorage.setItem("topScore", savedTopScore);
 }
 
 function showRankStats() {
@@ -98,6 +112,8 @@ function updateAverageDisplay() {
   showRankStats();
   average.innerText = rankAverage.toFixed(2);
   roundAverage.innerText = currentRoundAverage.toFixed(2);
+  bestFinishDisplay.innerText = savedBestFinish;
+  topScoreDisplay.innerText = savedTopScore;
   updateRank(rankAverage);
 }
 
@@ -124,86 +140,123 @@ function closeSettings() {
   settingsScreen.setAttribute("aria-hidden", "true");
 }
 
-applyTheme(savedTheme);
-
-if (
-  savedGamePoints >= 101 &&
-  savedGamePoints <= 901 &&
-  savedGamePoints % 100 === 1
-) {
-  selectedGamePoints = savedGamePoints;
-  gameSelect.value = savedGamePoints;
-  gamePoints.innerText = selectedGamePoints;
-  remainingPoints = selectedGamePoints;
-  remaining.innerText = selectedGamePoints;
-}
-
-updateAverageDisplay();
-
-function updateButtonText(previewRemaining) {
-  if (previewRemaining === 0) {
-    submitButton.innerText = "Spiel beenden";
-  } else {
-    submitButton.innerText = "Bestätigen";
-  }
+function getCurrentThrowScore() {
+  return currentDarts.reduce((sum, score) => sum + score, 0);
 }
 
 function updatePreview() {
-  let score1 = Number(dart1.value);
-  let score2 = Number(dart2.value);
-  let score3 = Number(dart3.value);
+  remaining.innerText = remainingPoints - getCurrentThrowScore();
+}
 
-  if (score1 > 60) {
-    dart1.value = "";
-    score1 = 0;
+function updateDartDisplays() {
+  dartDisplays.forEach((display, index) => {
+    display.innerText = currentDarts[index] ?? `Wurf ${index + 1}`;
+    display.classList.toggle("isFilled", currentDarts[index] !== undefined);
+  });
+  updatePreview();
+}
+
+function createKeyboardButton(label, onClick, className = "") {
+  let button = document.createElement("button");
+  button.type = "button";
+  button.className = className;
+  button.innerText = label;
+  button.addEventListener("click", onClick);
+  return button;
+}
+
+function getKeyboardLabel(score) {
+  let mode = multiplierModes[multiplierModeIndex];
+
+  if (score === 25) {
+    return mode.name === "Double" ? "Bull" : "25";
   }
 
-  if (score2 > 60) {
-    dart2.value = "";
-    score2 = 0;
+  return `${mode.prefix}${score}`;
+}
+
+function getKeyboardValue(score) {
+  if (score === 25) {
+    return multiplierModes[multiplierModeIndex].name === "Double" ? 50 : 25;
   }
 
-  if (score3 > 60) {
-    dart3.value = "";
-    score3 = 0;
+  return score * multiplierModes[multiplierModeIndex].factor;
+}
+
+function renderKeyboard() {
+  scoreKeyboard.innerHTML = "";
+
+  for (let score = 1; score <= 20; score++) {
+    scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(score), () => addDart(getKeyboardValue(score))));
   }
 
-  let previewScore = score1 + score2 + score3;
+  scoreKeyboard.appendChild(createKeyboardButton("←", undoDart, "keyboardUtility"));
+  scoreKeyboard.appendChild(createKeyboardButton(getMultiplierText(), toggleMultiplierMode, "keyboardUtility multiplierButton"));
+  scoreKeyboard.appendChild(createKeyboardButton("0", () => addDart(0)));
+  scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(25), () => addDart(getKeyboardValue(25))));
+  scoreKeyboard.appendChild(createKeyboardButton("→", redoDart, "keyboardUtility"));
+}
 
-  let previewRemaining = remainingPoints - previewScore;
+function getMultiplierText() {
+  let mode = multiplierModes[multiplierModeIndex];
+  return `${mode.name} ${mode.marker}`;
+}
 
-  updateButtonText(previewRemaining);
+function toggleMultiplierMode() {
+  multiplierModeIndex = (multiplierModeIndex + 1) % multiplierModes.length;
+  renderKeyboard();
+}
 
-  remaining.innerText = previewRemaining;
+function addDart(score) {
+  if (gameFinished || currentDarts.length >= 3) {
+    return;
+  }
+
+  currentDarts.push(score);
+  redoDarts = [];
+  updateDartDisplays();
+
+  if (currentDarts.length === 3) {
+    confirmCurrentRound();
+  }
+}
+
+function undoDart() {
+  if (gameFinished || currentDarts.length === 0) {
+    return;
+  }
+
+  redoDarts.push(currentDarts.pop());
+  updateDartDisplays();
+}
+
+function redoDart() {
+  if (gameFinished || redoDarts.length === 0 || currentDarts.length >= 3) {
+    return;
+  }
+
+  currentDarts.push(redoDarts.pop());
+  updateDartDisplays();
+
+  if (currentDarts.length === 3) {
+    confirmCurrentRound();
+  }
 }
 
 function processRound() {
-  let darts = [Number(dart1.value), Number(dart2.value), Number(dart3.value)];
-  let inputs = [dart1.value, dart2.value, dart3.value];
-
+  let darts = [...currentDarts];
   let tempRemaining = remainingPoints;
   let startRemaining = remainingPoints;
-  let usedDarts = 0;
+  let usedDarts = darts.length;
   let bust = false;
 
   for (let i = 0; i < darts.length; i++) {
-    let currentThrow = darts[i];
-
-    if (inputs[i] !== "") {
-      usedDarts++;
-    }
-
-    tempRemaining -= currentThrow;
+    tempRemaining -= darts[i];
 
     if (tempRemaining < 0) {
       bust = true;
-
-      console.log("Bust!");
-
       break;
     }
-
-    console.log("Rest:", tempRemaining);
   }
 
   hasConfirmedThrow = true;
@@ -223,17 +276,48 @@ function processRound() {
     roundTotalDarts += 3;
     savedTotalPoints += roundScore;
     savedTotalDarts += 3;
+
+    if (roundScore > savedTopScore) {
+      savedTopScore = roundScore;
+      saveProfileRecords();
+    }
+
     saveRankAverage();
     updateAverageDisplay();
   }
 
   if (remainingPoints === 0) {
     gameFinished = true;
+    let finishScore = startRemaining;
+
+    if (finishScore > savedBestFinish) {
+      savedBestFinish = finishScore;
+      saveProfileRecords();
+      updateAverageDisplay();
+    }
   }
-  return {
-    usedDarts: usedDarts,
-    bust: bust,
-  };
+
+  return { usedDarts, bust };
+}
+
+function clearCurrentThrow() {
+  currentDarts = [];
+  redoDarts = [];
+  updateDartDisplays();
+}
+
+function confirmCurrentRound() {
+  let result = processRound();
+
+  if (remainingPoints === 0) {
+    winAverage.innerText = average.innerText;
+    winDarts.innerText = roundTotalDarts;
+    winScreen.style.display = "flex";
+    return;
+  }
+
+  nextDart += result.bust ? result.usedDarts : 3;
+  clearCurrentThrow();
 }
 
 function resetGame() {
@@ -243,61 +327,29 @@ function resetGame() {
 
   roundTotalPoints = 0;
   roundTotalDarts = 0;
-
-  updateAverageDisplay();
   nextDart = 1;
-
-  dart1.placeholder = 1;
-  dart2.placeholder = 2;
-  dart3.placeholder = 3;
-
-  dart1.value = "";
-  dart2.value = "";
-  dart3.value = "";
-
-  updateButtonText(remainingPoints);
   gameFinished = false;
   winScreen.style.display = "none";
-
-  submitButton.disabled = false;
-
-  updatePreview();
+  clearCurrentThrow();
+  updateAverageDisplay();
 }
 
-submitButton.addEventListener("click", function () {
-  let result = processRound();
+applyTheme(savedTheme);
 
-  if (remainingPoints === 0) {
-    winAverage.innerText = average.innerText;
-    winDarts.innerText = roundTotalDarts;
+if (savedGamePoints >= 101 && savedGamePoints <= 901 && savedGamePoints % 100 === 1) {
+  selectedGamePoints = savedGamePoints;
+  gameSelect.value = savedGamePoints;
+  gamePoints.innerText = selectedGamePoints;
+  remainingPoints = selectedGamePoints;
+  remaining.innerText = selectedGamePoints;
+}
 
-    winScreen.style.display = "flex";
-    submitButton.disabled = true;
-    return;
-  }
-  if (result.bust) {
-    nextDart += result.usedDarts;
-  } else {
-    nextDart += 3;
-  }
-  dart1.placeholder = nextDart;
-  dart2.placeholder = nextDart + 1;
-  dart3.placeholder = nextDart + 2;
-
-  dart1.value = "";
-  dart2.value = "";
-  dart3.value = "";
-
-  updatePreview();
-});
-
-dart1.addEventListener("input", updatePreview);
-dart2.addEventListener("input", updatePreview);
-dart3.addEventListener("input", updatePreview);
+renderKeyboard();
+updateAverageDisplay();
+updateDartDisplays();
 
 newGameButton.addEventListener("click", function () {
   winScreen.style.display = "none";
-
   resetGame();
 });
 
@@ -311,10 +363,7 @@ settingsScreen.addEventListener("click", function (event) {
 });
 
 themeToggle.addEventListener("click", function () {
-  let nextTheme = document.body.classList.contains("lightMode")
-    ? "dark"
-    : "light";
-
+  let nextTheme = document.body.classList.contains("lightMode") ? "dark" : "light";
   applyTheme(nextTheme);
 });
 
