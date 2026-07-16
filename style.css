@@ -313,6 +313,7 @@ section{
     background:var(--box-bg);
     border-radius:16px;
     padding:18px;
+    margin-top:14px;
 }
 
 .settingsOption h3{
@@ -337,6 +338,18 @@ section{
     background:var(--accent);
     color:white;
     font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#gameSelect{
+    min-width:140px;
+    padding:12px 14px;
+    border:none;
+    border-radius:14px;
+    background:var(--input-bg);
+    color:var(--text);
+    font-size:18px;
     font-weight:bold;
     cursor:pointer;
 }

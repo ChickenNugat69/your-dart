@@ -18,8 +18,10 @@ const closeSettingsButton = document.getElementById("closeSettingsButton");
 const themeToggle = document.getElementById("themeToggle");
 const themeToggleText = document.getElementById("themeToggleText");
 const toggleIcon = document.querySelector(".toggleIcon");
+const gameSelect = document.getElementById("gameSelect");
 
-let remainingPoints = 501;
+let selectedGamePoints = 501;
+let remainingPoints = selectedGamePoints;
 let totalPoints = 0;
 let totalDarts = 0;
 
@@ -27,6 +29,7 @@ let nextDart = 1;
 let gameFinished = false;
 
 const savedTheme = localStorage.getItem("theme") || "dark";
+const savedGamePoints = Number(localStorage.getItem("gamePoints"));
 
 function applyTheme(theme){
 
@@ -55,6 +58,16 @@ function closeSettings(){
 }
 
 applyTheme(savedTheme);
+
+if(savedGamePoints >= 101 && savedGamePoints <= 901 && savedGamePoints % 100 === 1){
+
+    selectedGamePoints = savedGamePoints;
+    gameSelect.value = savedGamePoints;
+    gamePoints.innerText = selectedGamePoints;
+    remainingPoints = selectedGamePoints;
+    remaining.innerText = selectedGamePoints;
+
+}
 
 function updateButtonText(previewRemaining){
 
@@ -180,8 +193,9 @@ if(remainingPoints === 0){
 
 function resetGame(){
 
-    remainingPoints = 501;
-    remaining.innerText = 501;
+    remainingPoints = selectedGamePoints;
+    gamePoints.innerText = selectedGamePoints;
+    remaining.innerText = selectedGamePoints;
 
     totalPoints = 0;
     totalDarts = 0;
@@ -269,5 +283,13 @@ themeToggle.addEventListener("click", function(){
     let nextTheme = document.body.classList.contains("lightMode") ? "dark" : "light";
 
     applyTheme(nextTheme);
+
+});
+
+gameSelect.addEventListener("change", function(){
+
+    selectedGamePoints = Number(gameSelect.value);
+    localStorage.setItem("gamePoints", selectedGamePoints);
+    resetGame();
 
 });
