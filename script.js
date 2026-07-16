@@ -5,7 +5,6 @@ const roundAverage = document.getElementById("roundAverage");
 const bestFinishDisplay = document.getElementById("bestFinish");
 const topScoreDisplay = document.getElementById("topScore");
 const rankImage = document.getElementById("rankImage");
-const rankPlaceholder = document.getElementById("rankPlaceholder");
 const rankName = document.getElementById("rankName");
 const averageStats = document.getElementById("averageStats");
 const profileCard = document.querySelector(".profileCard");
@@ -93,7 +92,6 @@ function saveProfileRecords() {
 
 function showRankStats() {
   profileCard.hidden = false;
-  rankPlaceholder.hidden = true;
   rankImage.hidden = false;
   rankName.hidden = false;
   averageStats.hidden = false;
@@ -102,7 +100,6 @@ function showRankStats() {
 function updateAverageDisplay() {
   if (!hasConfirmedThrow) {
     profileCard.hidden = true;
-    rankPlaceholder.hidden = true;
     rankImage.hidden = true;
     rankName.hidden = true;
     averageStats.hidden = true;
