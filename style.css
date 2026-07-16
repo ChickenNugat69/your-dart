@@ -101,19 +101,6 @@ section{
     margin-bottom:15px;
 }
 
-.rankPlaceholder{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:220px;
-    margin-bottom:15px;
-    border:2px dashed var(--muted);
-    border-radius:18px;
-    color:var(--accent-bright);
-    font-size:34px;
-    font-weight:bold;
-}
-
 .profileStats{
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -586,19 +573,21 @@ section{
 
     .scoreKeyboard{
         flex:1 1 auto;
-        min-height:0;
-        gap:4px;
+        min-height:280px;
+        grid-template-rows:repeat(5, minmax(52px, 1fr));
+        gap:6px;
     }
 
     .scoreKeyboard button{
-        min-height:0;
+        min-height:52px;
         height:auto;
-        font-size:clamp(13px, 4.1vw, 17px);
-        border-width:1px;
-        border-radius:7px;
+        font-size:clamp(18px, 5vw, 22px);
+        border-width:2px;
+        border-radius:10px;
     }
 
     .scoreKeyboard .multiplierButton{
-        font-size:clamp(9px, 2.8vw, 12px);
+        font-size:clamp(12px, 3.4vw, 15px);
+        line-height:1.15;
     }
 }
