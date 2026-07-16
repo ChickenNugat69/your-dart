@@ -45,6 +45,7 @@ let savedTotalDarts = Number(localStorage.getItem("rankTotalDarts")) || 0;
 let savedBestFinish = Number(localStorage.getItem("bestFinish")) || 0;
 let savedTopScore = Number(localStorage.getItem("topScore")) || 0;
 let hasConfirmedThrow = savedTotalDarts > 0;
+let gameStartProfileState = getProfileState();
 
 let nextDart = 1;
 let gameFinished = false;
@@ -52,6 +53,7 @@ let inputLocked = false;
 let currentDarts = [];
 let redoDarts = [];
 let multiplierModeIndex = 0;
+let bustTimeoutId = null;
 
 const ranks = [
   { min: 0, max: 9, name: "🪤 Sklave", image: "images/sklave.png" },
@@ -94,6 +96,30 @@ function saveProfileRecords() {
   localStorage.setItem("topScore", savedTopScore);
 }
 
+function getProfileState() {
+  return {
+    totalPoints: savedTotalPoints,
+    totalDarts: savedTotalDarts,
+    bestFinish: savedBestFinish,
+    topScore: savedTopScore,
+    hasConfirmedThrow,
+  };
+}
+
+function restoreProfileState(profileState) {
+  savedTotalPoints = profileState.totalPoints;
+  savedTotalDarts = profileState.totalDarts;
+  savedBestFinish = profileState.bestFinish;
+  savedTopScore = profileState.topScore;
+  hasConfirmedThrow = profileState.hasConfirmedThrow;
+  saveRankAverage();
+  saveProfileRecords();
+}
+
+function rememberGameStartProfileState() {
+  gameStartProfileState = getProfileState();
+}
+
 function showRankStats() {
   profileCard.hidden = false;
   rankImage.hidden = false;
@@ -103,11 +129,11 @@ function showRankStats() {
 }
 
 function showRankPlaceholder() {
-  profileCard.hidden = false;
+  profileCard.hidden = true;
   rankImage.hidden = true;
-  rankPlaceholder.hidden = false;
-  rankName.hidden = false;
-  rankName.innerText = "–";
+  rankPlaceholder.hidden = true;
+  rankName.hidden = true;
+  rankName.innerText = "";
   averageStats.hidden = true;
 }
 
@@ -353,12 +379,13 @@ function showBust(result) {
   bustDisplay.innerText = "Bust";
   bustDisplay.classList.add("isBust");
 
-  window.setTimeout(() => {
+  bustTimeoutId = window.setTimeout(() => {
     nextDart += result.usedDarts;
     inputLocked = false;
     setKeyboardDisabled(false);
     dartDisplays.forEach((display) => display.classList.remove("isBust"));
     clearCurrentThrow();
+    bustTimeoutId = null;
   }, 2000);
 }
 
@@ -391,6 +418,7 @@ function resetProfileStats() {
   localStorage.removeItem("rankTotalDarts");
   localStorage.removeItem("bestFinish");
   localStorage.removeItem("topScore");
+  rememberGameStartProfileState();
 }
 
 function resetSettingsToDefaults() {
@@ -399,15 +427,17 @@ function resetSettingsToDefaults() {
   localStorage.setItem("gamePoints", selectedGamePoints);
   applyTheme("dark");
   resetProfileStats();
-  resetGame();
-}
-
-function cancelRound() {
-  resetGame();
+  resetGame({ rememberProfileState: false });
   closeSettings();
 }
 
-function resetGame() {
+function cancelRound() {
+  restoreProfileState(gameStartProfileState);
+  resetGame({ rememberProfileState: false });
+  closeSettings();
+}
+
+function resetGame({ rememberProfileState = true } = {}) {
   remainingPoints = selectedGamePoints;
   gamePoints.innerText = selectedGamePoints;
   remaining.innerText = selectedGamePoints;
@@ -417,10 +447,21 @@ function resetGame() {
   nextDart = 1;
   gameFinished = false;
   inputLocked = false;
+
+  if (bustTimeoutId !== null) {
+    window.clearTimeout(bustTimeoutId);
+    bustTimeoutId = null;
+  }
+
   setKeyboardDisabled(false);
   remaining.classList.remove("isBust");
   winScreen.style.display = "none";
   clearCurrentThrow();
+
+  if (rememberProfileState) {
+    rememberGameStartProfileState();
+  }
+
   updateAverageDisplay();
 }
 
