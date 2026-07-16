@@ -1,6 +1,8 @@
 const remaining = document.getElementById("remaining");
 const gamePoints = document.getElementById("gamePoints");
 const average = document.getElementById("average");
+const rankImage = document.getElementById("rankImage");
+const rankName = document.getElementById("rankName");
 
 const dart1 = document.getElementById("dart1");
 const dart2 = document.getElementById("dart2");
@@ -27,6 +29,44 @@ let totalDarts = 0;
 
 let nextDart = 1;
 let gameFinished = false;
+
+const ranks = [
+    { min: 0, max: 9, name: "🪤 Sklave", image: "images/rank_placeholder.png" },
+    { min: 10, max: 19, name: "🤡 Hofnar", image: "images/rank_placeholder.png" },
+    { min: 20, max: 29, name: "🌾 Bauer", image: "images/rank_placeholder.png" },
+    { min: 30, max: 39, name: "💰 Händler", image: "images/rank_placeholder.png" },
+    { min: 40, max: 59, name: "🏰 Adel", image: "images/rank_placeholder.png" },
+    { min: 60, max: 69, name: "👑 Königlich", image: "images/rank_placeholder.png" },
+    { min: 70, max: 89, name: "⚔️ Kaiser", image: "images/rank_placeholder.png" },
+    { min: 90, max: Infinity, name: "🌟 Göttlich", image: "images/rank_placeholder.png" }
+];
+
+function getRank(currentAverage){
+
+    return ranks.find(function(rank){
+
+        return currentAverage >= rank.min && currentAverage <= rank.max;
+
+    }) || ranks[0];
+
+}
+
+function updateRank(currentAverage){
+
+    let currentRank = getRank(currentAverage);
+
+    rankName.innerText = currentRank.name;
+    rankImage.src = currentRank.image;
+    rankImage.alt = currentRank.name + " Rang";
+
+}
+
+function updateAverageDisplay(currentAverage){
+
+    average.innerText = currentAverage.toFixed(2);
+    updateRank(currentAverage);
+
+}
 
 const savedTheme = localStorage.getItem("theme") || "dark";
 const savedGamePoints = Number(localStorage.getItem("gamePoints"));
@@ -164,7 +204,7 @@ function processRound(){
 
          totalDarts += usedDarts;
     let currentAverage = (totalPoints / totalDarts) * 3;
-    average.innerText = currentAverage.toFixed(2);
+    updateAverageDisplay(currentAverage);
 
 }else{
 
@@ -177,7 +217,7 @@ function processRound(){
     totalDarts += 3;
 
     let currentAverage = (totalPoints / totalDarts) * 3;
-    average.innerText = currentAverage.toFixed(2);
+    updateAverageDisplay(currentAverage);
 
 }
 if(remainingPoints === 0){
@@ -200,7 +240,7 @@ function resetGame(){
     totalPoints = 0;
     totalDarts = 0;
 
-    average.innerText = "0.00";
+    updateAverageDisplay(0);
     nextDart = 1;
 
     dart1.placeholder = 1;
