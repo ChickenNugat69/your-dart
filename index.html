@@ -23,14 +23,23 @@
     <!-- Rang -->
     <section class="card rank">
 
-       <img id="rankImage" src="images/rank_placeholder.png" alt="Rang">
+       <div id="rankPlaceholder" class="rankPlaceholder">Your Darts</div>
 
-        <h2 id="rankName">🪤 Sklave</h2>
+       <img id="rankImage" src="images/rank_placeholder.png" alt="Rang" hidden>
 
-        <p class="average">
-            Average
-            <span id="average">0.00</span>
-        </p>
+        <h2 id="rankName" class="rankName" hidden></h2>
+
+        <div id="averageStats" class="averageStats" hidden>
+            <p class="average">
+                Rang Average
+                <span id="average">0.00</span>
+            </p>
+
+            <p class="average">
+                Runden Average
+                <span id="roundAverage">0.00</span>
+            </p>
+        </div>
 
     </section>
 
