@@ -211,7 +211,7 @@ section{
 
 .scoreKeyboard{
     display:grid;
-    grid-template-columns:repeat(6, 1fr);
+    grid-template-columns:repeat(5, 1fr);
     gap:5px;
 }
 
@@ -466,7 +466,8 @@ section{
 }
 
 .themeToggle,
-.resetSettingsButton{
+.resetSettingsButton,
+.cancelRoundButton{
     display:flex;
     align-items:center;
     gap:8px;
@@ -480,6 +481,10 @@ section{
     font-size:15px;
     font-weight:bold;
     cursor:pointer;
+}
+
+.cancelRoundButton{
+    background:var(--accent);
 }
 
 #gameSelect{
@@ -534,7 +539,7 @@ section{
     }
 
     .profileImage{
-        width:min(104px, 34vw);
+        width:min(150px, 46vw);
         margin-bottom:4px;
     }
 

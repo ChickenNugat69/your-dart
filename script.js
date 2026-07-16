@@ -28,6 +28,7 @@ const themeToggleText = document.getElementById("themeToggleText");
 const toggleIcon = document.querySelector(".toggleIcon");
 const gameSelect = document.getElementById("gameSelect");
 const resetSettingsButton = document.getElementById("resetSettingsButton");
+const cancelRoundButton = document.getElementById("cancelRoundButton");
 
 const multiplierModes = [
   { name: "Single", marker: "●○○", factor: 1, prefix: "" },
@@ -205,8 +206,7 @@ function renderKeyboard() {
   }
 
   scoreKeyboard.appendChild(createKeyboardButton("←", undoDart, "keyboardUtility"));
-  scoreKeyboard.appendChild(createMultiplierButton(1));
-  scoreKeyboard.appendChild(createMultiplierButton(2));
+  scoreKeyboard.appendChild(createMultiplierCycleButton());
   scoreKeyboard.appendChild(createKeyboardButton("0", () => addDart(0)));
   scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(25), () => addDart(getKeyboardValue(25))));
   scoreKeyboard.appendChild(createKeyboardButton("→", redoDart, "keyboardUtility"));
@@ -217,16 +217,15 @@ function getMultiplierText(index) {
   return `${mode.name} ${mode.marker}`;
 }
 
-function createMultiplierButton(index) {
-  let isSelected = multiplierModeIndex === index;
-  let button = createKeyboardButton(getMultiplierText(index), () => setMultiplierMode(index), "keyboardUtility multiplierButton");
-  button.classList.toggle("isSelected", isSelected);
-  button.setAttribute("aria-pressed", isSelected);
+function createMultiplierCycleButton() {
+  let button = createKeyboardButton(getMultiplierText(multiplierModeIndex), cycleMultiplierMode, "keyboardUtility multiplierButton isSelected");
+  button.setAttribute("aria-label", "Multiplikator wechseln");
+  button.setAttribute("aria-pressed", "true");
   return button;
 }
 
-function setMultiplierMode(index) {
-  multiplierModeIndex = index;
+function cycleMultiplierMode() {
+  multiplierModeIndex = (multiplierModeIndex + 1) % multiplierModes.length;
   renderKeyboard();
 }
 
@@ -382,12 +381,30 @@ function confirmCurrentRound() {
   clearCurrentThrow();
 }
 
+function resetProfileStats() {
+  savedTotalPoints = 0;
+  savedTotalDarts = 0;
+  savedBestFinish = 0;
+  savedTopScore = 0;
+  hasConfirmedThrow = false;
+  localStorage.removeItem("rankTotalPoints");
+  localStorage.removeItem("rankTotalDarts");
+  localStorage.removeItem("bestFinish");
+  localStorage.removeItem("topScore");
+}
+
 function resetSettingsToDefaults() {
   selectedGamePoints = 501;
   gameSelect.value = selectedGamePoints;
   localStorage.setItem("gamePoints", selectedGamePoints);
   applyTheme("dark");
+  resetProfileStats();
   resetGame();
+}
+
+function cancelRound() {
+  resetGame();
+  closeSettings();
 }
 
 function resetGame() {
@@ -447,3 +464,4 @@ gameSelect.addEventListener("change", function () {
 });
 
 resetSettingsButton.addEventListener("click", resetSettingsToDefaults);
+cancelRoundButton.addEventListener("click", cancelRound);
