@@ -98,7 +98,14 @@ section{
     width:min(360px, 100%);
     aspect-ratio:1 / 1;
     object-fit:contain;
+    display:block;
+    margin-left:auto;
+    margin-right:auto;
     margin-bottom:15px;
+}
+
+.rankPlaceholder{
+    background:#000;
 }
 
 .profileStats{
