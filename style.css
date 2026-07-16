@@ -6,11 +6,40 @@
     box-sizing:border-box;
 }
 
+:root{
+    --background:#121212;
+    --text:white;
+    --header-button-bg:#1f1f1f;
+    --card-bg:#1f1f1f;
+    --input-bg:#2c2c2c;
+    --box-bg:#2a2a2a;
+    --accent:#00b894;
+    --accent-bright:#00d084;
+    --muted:#bbbbbb;
+    --overlay:rgba(0,0,0,0.6);
+    --shadow:rgba(0,0,0,.3);
+}
+
+body.lightMode{
+    --background:#f4f7fb;
+    --text:#17202a;
+    --header-button-bg:#ffffff;
+    --card-bg:#ffffff;
+    --input-bg:#edf2f7;
+    --box-bg:#f0f4f8;
+    --accent:#008f72;
+    --accent-bright:#008f72;
+    --muted:#607080;
+    --overlay:rgba(23,32,42,0.35);
+    --shadow:rgba(20,40,60,.15);
+}
+
 body{
-    background:#121212;
-    color:white;
+    background:var(--background);
+    color:var(--text);
     font-family:Arial, Helvetica, sans-serif;
     padding:20px;
+    transition:background .2s ease, color .2s ease;
 }
 
 /* Header */
@@ -31,8 +60,8 @@ header button{
     height:45px;
     border:none;
     border-radius:12px;
-    background:#1f1f1f;
-    color:white;
+    background:var(--header-button-bg);
+    color:var(--text);
     font-size:22px;
     cursor:pointer;
 }
@@ -40,7 +69,7 @@ header button{
 /* Karten */
 
 section{
-    background:#1f1f1f;
+    background:var(--card-bg);
     border-radius:18px;
     padding:20px;
     margin-bottom:20px;
@@ -85,8 +114,8 @@ section{
     margin:10px 5px;
     border:none;
     border-radius:10px;
-    background:#2c2c2c;
-    color:white;
+    background:var(--input-bg);
+    color:var(--text);
     font-size:22px;
     text-align:center;
 }
@@ -97,19 +126,19 @@ section{
     padding:15px;
     border:none;
     border-radius:12px;
-    background:#00b894;
+    background:var(--accent);
     color:white;
     font-size:18px;
     cursor:pointer;
 }
 
 .card{
-    box-shadow:0 10px 25px rgba(0,0,0,.3);
+    box-shadow:0 10px 25px var(--shadow);
 }
 
 .box{
     width:45%;
-    background:#2a2a2a;
+    background:var(--box-bg);
     padding:20px;
     border-radius:15px;
 }
@@ -130,7 +159,7 @@ section{
     margin-top:8px;
     font-size:34px;
     font-weight:bold;
-    color:#00d084;
+    color:var(--accent-bright);
 }
 
 .throwCounter{
@@ -159,7 +188,7 @@ section{
 
     inset: 0;
 
-    background: rgba(0,0,0,0.6);
+    background: var(--overlay);
 
     justify-content: center;
     align-items: center;
@@ -170,8 +199,8 @@ section{
 
 .winBox{
 
-    background: #2b2b2b;
-    color: white;
+    background: var(--card-bg);
+    color: var(--text);
 
     width: 320px;
 
@@ -199,7 +228,7 @@ section{
 
     margin: 0;
 
-    color: #bbbbbb;
+    color: var(--muted);
 
     font-size: 15px;
 
@@ -231,4 +260,96 @@ section{
 
     cursor: pointer;
 
+}
+
+.settingsScreen{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:var(--overlay);
+    justify-content:center;
+    align-items:center;
+    z-index:1001;
+    padding:20px;
+}
+
+.settingsBox{
+    width:min(420px, 100%);
+    background:var(--card-bg);
+    color:var(--text);
+    border-radius:22px;
+    padding:24px;
+    box-shadow:0 10px 30px var(--shadow);
+}
+
+.settingsHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.settingsHeader h2{
+    font-size:24px;
+}
+
+.settingsHeader button{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:12px;
+    background:var(--input-bg);
+    color:var(--text);
+    font-size:28px;
+    line-height:1;
+    cursor:pointer;
+}
+
+.settingsOption{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:16px;
+    background:var(--box-bg);
+    border-radius:16px;
+    padding:18px;
+    margin-top:14px;
+}
+
+.settingsOption h3{
+    margin-bottom:6px;
+}
+
+.settingsOption p{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.4;
+}
+
+.themeToggle{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    min-width:140px;
+    justify-content:center;
+    padding:12px 14px;
+    border:none;
+    border-radius:999px;
+    background:var(--accent);
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#gameSelect{
+    min-width:140px;
+    padding:12px 14px;
+    border:none;
+    border-radius:14px;
+    background:var(--input-bg);
+    color:var(--text);
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
 }

@@ -11,11 +11,11 @@
 <body>
 
     <header>
-        <button>⚙</button>
+        <button id="settingsButton" aria-label="Einstellungen öffnen">⚙</button>
 
         <h1>Your Darts</h1>
 
-        <button>👤</button>
+        <button aria-label="Profil">👤</button>
     </header>
 
     <main>
@@ -97,6 +97,50 @@
         <button id="newGameButton">
             Neues Spiel
         </button>
+
+    </div>
+
+</div>
+
+<div id="settingsScreen" class="settingsScreen" aria-hidden="true">
+
+    <div class="settingsBox" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+
+        <div class="settingsHeader">
+            <h2 id="settingsTitle">Einstellungen</h2>
+            <button id="closeSettingsButton" aria-label="Einstellungen schließen">×</button>
+        </div>
+
+        <div class="settingsOption">
+            <div>
+                <h3>Design</h3>
+                <p>Wechsle zwischen Light Mode und Dark Mode.</p>
+            </div>
+
+            <button id="themeToggle" class="themeToggle" type="button" aria-pressed="false">
+                <span class="toggleIcon">🌙</span>
+                <span id="themeToggleText">Dark Mode</span>
+            </button>
+        </div>
+
+        <div class="settingsOption">
+            <div>
+                <h3>Game</h3>
+                <p>Wähle die Startpunkte für das nächste Spiel.</p>
+            </div>
+
+            <select id="gameSelect" aria-label="Startpunkte auswählen">
+                <option value="101">101</option>
+                <option value="201">201</option>
+                <option value="301">301</option>
+                <option value="401">401</option>
+                <option value="501" selected>501</option>
+                <option value="601">601</option>
+                <option value="701">701</option>
+                <option value="801">801</option>
+                <option value="901">901</option>
+            </select>
+        </div>
 
     </div>
 
