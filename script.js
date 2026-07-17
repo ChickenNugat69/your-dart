@@ -212,7 +212,7 @@ function getKeyboardLabel(score) {
   let mode = multiplierModes[multiplierModeIndex];
 
   if (score === 25) {
-    return mode.name === "Triple" ? "Bull" : "25";
+    return mode.name === "Triple" ? "50" : "25";
   }
 
   return `${mode.prefix}${score}`;
