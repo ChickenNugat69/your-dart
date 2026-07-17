@@ -73,6 +73,7 @@ let selectedStartMode = localStorage.getItem("startMode") || "straight";
 let selectedFinishMode = localStorage.getItem("finishMode") || "straight";
 let hasStartedScoring = selectedStartMode === "straight";
 let bustTimeoutId = null;
+let roundClearTimeoutId = null;
 
 const ranks = [
   { min: 0, max: 9, name: "🪤 Sklave", image: "images/sklave.png" },
@@ -286,11 +287,29 @@ function updatePreview() {
   remaining.innerText = previewRemaining < 0 ? "Bust" : previewRemaining;
 }
 
+function getStartModeDisplayStates() {
+  let throwHasStartedScoring = hasStartedScoring;
+
+  return currentDarts.map((dart) => {
+    if (throwHasStartedScoring || dartMatchesMode(dart, selectedStartMode)) {
+      throwHasStartedScoring = true;
+      return true;
+    }
+
+    return false;
+  });
+}
+
 function updateDartDisplays() {
+  let scoringStates = getStartModeDisplayStates();
+
   dartDisplays.forEach((display, index) => {
-    display.innerText = currentDarts[index]?.label ?? `Wurf ${nextDart + index}`;
+    let dart = currentDarts[index];
+
+    display.innerText = dart?.label ?? `Wurf ${nextDart + index}`;
     display.setAttribute("aria-label", `Wurf ${nextDart + index}`);
-    display.classList.toggle("isFilled", currentDarts[index] !== undefined);
+    display.classList.toggle("isFilled", dart !== undefined);
+    display.classList.toggle("isInvalidStart", dart !== undefined && !scoringStates[index]);
   });
   updatePreview();
 }
@@ -487,9 +506,18 @@ function setKeyboardDisabled(disabled) {
   });
 }
 
-function showBust(result) {
+function lockInputUntilNextThrow(timeoutCallback, delay) {
   inputLocked = true;
   setKeyboardDisabled(true);
+
+  return window.setTimeout(() => {
+    timeoutCallback();
+    inputLocked = false;
+    setKeyboardDisabled(false);
+  }, delay);
+}
+
+function showBust(result) {
   remaining.classList.add("isBust");
   remaining.innerText = "Bust";
 
@@ -497,14 +525,20 @@ function showBust(result) {
   bustDisplay.innerText = "Bust";
   bustDisplay.classList.add("isBust");
 
-  bustTimeoutId = window.setTimeout(() => {
+  bustTimeoutId = lockInputUntilNextThrow(() => {
     nextDart += result.usedDarts;
-    inputLocked = false;
-    setKeyboardDisabled(false);
     dartDisplays.forEach((display) => display.classList.remove("isBust"));
     clearCurrentThrow();
     bustTimeoutId = null;
   }, 2000);
+}
+
+function showCompletedRound(result) {
+  roundClearTimeoutId = lockInputUntilNextThrow(() => {
+    nextDart += result.usedDarts;
+    clearCurrentThrow();
+    roundClearTimeoutId = null;
+  }, 1000);
 }
 
 function confirmCurrentRound() {
@@ -522,8 +556,7 @@ function confirmCurrentRound() {
     return;
   }
 
-  nextDart += result.bust ? result.usedDarts : 3;
-  clearCurrentThrow();
+  showCompletedRound(result);
 }
 
 function resetProfileStats() {
@@ -575,6 +608,11 @@ function resetGame({ rememberProfileState = true } = {}) {
   if (bustTimeoutId !== null) {
     window.clearTimeout(bustTimeoutId);
     bustTimeoutId = null;
+  }
+
+  if (roundClearTimeoutId !== null) {
+    window.clearTimeout(roundClearTimeoutId);
+    roundClearTimeoutId = null;
   }
 
   setKeyboardDisabled(false);
