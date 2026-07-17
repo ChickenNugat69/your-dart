@@ -653,3 +653,46 @@ section{
 .settingsOptionStacked{
     align-items:flex-start;
 }
+
+.dartModeSetting{
+    flex-direction:column;
+}
+
+.settingsChoiceToggle,
+.settingsChoiceButton{
+    width:100%;
+    padding:12px 14px;
+    border:none;
+    border-radius:14px;
+    background:var(--input-bg);
+    color:var(--text);
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.settingsChoiceToggle{
+    position:relative;
+    text-align:left;
+}
+
+.settingsChoiceToggle::after{
+    content:"▾";
+    position:absolute;
+    right:14px;
+}
+
+.settingsChoiceToggle[aria-expanded="true"]::after{
+    content:"▴";
+}
+
+.settingsChoiceOptions{
+    display:grid;
+    width:100%;
+    gap:8px;
+}
+
+.settingsChoiceButton.isSelected{
+    background:var(--accent);
+    color:white;
+}

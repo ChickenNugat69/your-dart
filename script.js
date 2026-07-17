@@ -29,11 +29,27 @@ const toggleIcon = document.querySelector(".toggleIcon");
 const gameSelect = document.getElementById("gameSelect");
 const resetSettingsButton = document.getElementById("resetSettingsButton");
 const cancelRoundButton = document.getElementById("cancelRoundButton");
+const startModeToggle = document.getElementById("startModeToggle");
+const startModeOptions = document.getElementById("startModeOptions");
+const finishModeToggle = document.getElementById("finishModeToggle");
+const finishModeOptions = document.getElementById("finishModeOptions");
 
 const multiplierModes = [
   { name: "Single", marker: "●○○", factor: 1, prefix: "" },
   { name: "Double", marker: "○●○", factor: 2, prefix: "D" },
   { name: "Triple", marker: "○○●", factor: 3, prefix: "T" },
+];
+
+const startModes = [
+  { value: "straight", label: "Straight In" },
+  { value: "double", label: "Double In" },
+  { value: "master", label: "Master In" },
+];
+
+const finishModes = [
+  { value: "straight", label: "Straight Out" },
+  { value: "double", label: "Double Out" },
+  { value: "master", label: "Master Out" },
 ];
 
 let selectedGamePoints = 501;
@@ -53,6 +69,9 @@ let inputLocked = false;
 let currentDarts = [];
 let redoDarts = [];
 let multiplierModeIndex = 0;
+let selectedStartMode = localStorage.getItem("startMode") || "straight";
+let selectedFinishMode = localStorage.getItem("finishMode") || "straight";
+let hasStartedScoring = selectedStartMode === "straight";
 let bustTimeoutId = null;
 
 const ranks = [
@@ -159,6 +178,71 @@ function updateAverageDisplay() {
 const savedTheme = localStorage.getItem("theme") || "dark";
 const savedGamePoints = Number(localStorage.getItem("gamePoints"));
 
+function isDoubleDart(dart) {
+  return dart.multiplier === "Double";
+}
+
+function isMasterDart(dart) {
+  return dart.multiplier === "Double" || dart.multiplier === "Triple";
+}
+
+function dartMatchesMode(dart, mode) {
+  if (mode === "double") {
+    return isDoubleDart(dart);
+  }
+
+  if (mode === "master") {
+    return isMasterDart(dart);
+  }
+
+  return true;
+}
+
+function getModeLabel(modes, value) {
+  return (modes.find((mode) => mode.value === value) || modes[0]).label;
+}
+
+function updateModeToggle(toggle, modes, value) {
+  toggle.innerText = getModeLabel(modes, value);
+}
+
+function renderModeOptions(container, modes, selectedValue, onSelect) {
+  container.innerHTML = "";
+
+  modes.forEach((mode) => {
+    let button = createKeyboardButton(mode.label, () => onSelect(mode.value), "settingsChoiceButton");
+    button.classList.toggle("isSelected", mode.value === selectedValue);
+    button.setAttribute("aria-pressed", mode.value === selectedValue);
+    container.appendChild(button);
+  });
+}
+
+function setChoiceOptionsOpen(toggle, container, open) {
+  toggle.setAttribute("aria-expanded", open);
+  container.hidden = !open;
+}
+
+function refreshModeSettings() {
+  updateModeToggle(startModeToggle, startModes, selectedStartMode);
+  updateModeToggle(finishModeToggle, finishModes, selectedFinishMode);
+  renderModeOptions(startModeOptions, startModes, selectedStartMode, selectStartMode);
+  renderModeOptions(finishModeOptions, finishModes, selectedFinishMode, selectFinishMode);
+}
+
+function selectStartMode(value) {
+  selectedStartMode = value;
+  localStorage.setItem("startMode", selectedStartMode);
+  refreshModeSettings();
+  resetGame();
+}
+
+function selectFinishMode(value) {
+  selectedFinishMode = value;
+  localStorage.setItem("finishMode", selectedFinishMode);
+  refreshModeSettings();
+  resetGame();
+}
+
 function applyTheme(theme) {
   let lightModeActive = theme === "light";
 
@@ -180,7 +264,7 @@ function closeSettings() {
 }
 
 function getCurrentThrowScore() {
-  return currentDarts.reduce((sum, score) => sum + score, 0);
+  return currentDarts.reduce((sum, dart) => sum + dart.score, 0);
 }
 
 function updatePreview() {
@@ -192,7 +276,7 @@ function updatePreview() {
 
 function updateDartDisplays() {
   dartDisplays.forEach((display, index) => {
-    display.innerText = currentDarts[index] ?? `Wurf ${nextDart + index}`;
+    display.innerText = currentDarts[index]?.label ?? `Wurf ${nextDart + index}`;
     display.setAttribute("aria-label", `Wurf ${nextDart + index}`);
     display.classList.toggle("isFilled", currentDarts[index] !== undefined);
   });
@@ -236,13 +320,13 @@ function renderKeyboard() {
   scoreKeyboard.innerHTML = "";
 
   for (let score = 1; score <= 20; score++) {
-    scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(score), () => addDart(getKeyboardValue(score))));
+    scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(score), () => addDart(getKeyboardValue(score), getKeyboardLabel(score))));
   }
 
   scoreKeyboard.appendChild(createKeyboardButton("←", undoDart, "keyboardUtility"));
   scoreKeyboard.appendChild(createMultiplierCycleButton());
-  scoreKeyboard.appendChild(createKeyboardButton("0", () => addDart(0)));
-  scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(25), () => addDart(getKeyboardValue(25))));
+  scoreKeyboard.appendChild(createKeyboardButton("0", () => addDart(0, "0")));
+  scoreKeyboard.appendChild(createKeyboardButton(getKeyboardLabel(25), () => addDart(getKeyboardValue(25), getKeyboardLabel(25))));
   scoreKeyboard.appendChild(createKeyboardButton("→", redoDart, "keyboardUtility"));
 }
 
@@ -270,12 +354,16 @@ function resetMultiplierMode() {
   }
 }
 
-function addDart(score) {
+function addDart(score, label = String(score)) {
   if (gameFinished || inputLocked || currentDarts.length >= 3) {
     return;
   }
 
-  currentDarts.push(score);
+  currentDarts.push({
+    score,
+    label,
+    multiplier: multiplierModes[multiplierModeIndex].name,
+  });
   redoDarts = [];
   resetMultiplierMode();
   updateDartDisplays();
@@ -315,9 +403,19 @@ function processRound() {
   let bust = false;
 
   for (let i = 0; i < darts.length; i++) {
-    tempRemaining -= darts[i];
+    let dart = darts[i];
 
-    if (tempRemaining < 0) {
+    if (!hasStartedScoring) {
+      if (!dartMatchesMode(dart, selectedStartMode)) {
+        continue;
+      }
+
+      hasStartedScoring = true;
+    }
+
+    tempRemaining -= dart.score;
+
+    if (tempRemaining < 0 || (tempRemaining === 0 && !dartMatchesMode(dart, selectedFinishMode))) {
       bust = true;
       usedDarts = i + 1;
       break;
@@ -431,8 +529,13 @@ function resetProfileStats() {
 
 function resetSettingsToDefaults() {
   selectedGamePoints = 501;
+  selectedStartMode = "straight";
+  selectedFinishMode = "straight";
   gameSelect.value = selectedGamePoints;
   localStorage.setItem("gamePoints", selectedGamePoints);
+  localStorage.setItem("startMode", selectedStartMode);
+  localStorage.setItem("finishMode", selectedFinishMode);
+  refreshModeSettings();
   applyTheme("dark");
   resetProfileStats();
   resetGame({ rememberProfileState: false });
@@ -455,6 +558,7 @@ function resetGame({ rememberProfileState = true } = {}) {
   nextDart = 1;
   gameFinished = false;
   inputLocked = false;
+  hasStartedScoring = selectedStartMode === "straight";
 
   if (bustTimeoutId !== null) {
     window.clearTimeout(bustTimeoutId);
@@ -483,6 +587,7 @@ if (savedGamePoints >= 101 && savedGamePoints <= 901 && savedGamePoints % 100 ==
   remaining.innerText = selectedGamePoints;
 }
 
+refreshModeSettings();
 renderKeyboard();
 updateAverageDisplay();
 updateDartDisplays();
@@ -514,3 +619,11 @@ gameSelect.addEventListener("change", function () {
 
 resetSettingsButton.addEventListener("click", resetSettingsToDefaults);
 cancelRoundButton.addEventListener("click", cancelRound);
+
+startModeToggle.addEventListener("click", function () {
+  setChoiceOptionsOpen(startModeToggle, startModeOptions, startModeOptions.hidden);
+});
+
+finishModeToggle.addEventListener("click", function () {
+  setChoiceOptionsOpen(finishModeToggle, finishModeOptions, finishModeOptions.hidden);
+});
