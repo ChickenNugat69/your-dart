@@ -458,12 +458,13 @@ section{
     gap:16px;
     background:var(--box-bg);
     border-radius:16px;
-    padding:18px;
-    margin-top:14px;
+    padding:14px;
+    margin-top:10px;
 }
 
 .settingsOption h3{
-    margin-bottom:6px;
+    margin-bottom:0;
+    font-size:16px;
 }
 
 .settingsOption p{
@@ -478,14 +479,14 @@ section{
     display:flex;
     align-items:center;
     gap:8px;
-    min-width:140px;
+    min-width:112px;
     justify-content:center;
-    padding:12px 14px;
+    padding:8px 12px;
     border:none;
     border-radius:999px;
     background:var(--accent);
     color:white;
-    font-size:15px;
+    font-size:14px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -495,13 +496,13 @@ section{
 }
 
 #gameSelect{
-    min-width:140px;
-    padding:12px 14px;
+    min-width:112px;
+    padding:8px 12px;
     border:none;
-    border-radius:14px;
+    border-radius:12px;
     background:var(--input-bg);
     color:var(--text);
-    font-size:18px;
+    font-size:15px;
     font-weight:bold;
     cursor:pointer;
 }
@@ -661,12 +662,12 @@ section{
 .settingsChoiceToggle,
 .settingsChoiceButton{
     width:100%;
-    padding:12px 14px;
+    padding:8px 12px;
     border:none;
-    border-radius:14px;
+    border-radius:12px;
     background:var(--input-bg);
     color:var(--text);
-    font-size:16px;
+    font-size:14px;
     font-weight:bold;
     cursor:pointer;
 }
