@@ -207,7 +207,8 @@ section{
 }
 
 #remaining.isBust,
-.dartDisplay.isBust{
+.dartDisplay.isBust,
+.dartDisplay.isInvalidStart{
     color:#ff4d4d;
 }
 
