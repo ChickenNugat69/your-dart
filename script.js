@@ -234,14 +234,14 @@ function selectStartMode(value) {
   selectedStartMode = value;
   localStorage.setItem("startMode", selectedStartMode);
   refreshModeSettings();
-  resetGame();
+  abortCurrentGameAndReset();
 }
 
 function selectFinishMode(value) {
   selectedFinishMode = value;
   localStorage.setItem("finishMode", selectedFinishMode);
   refreshModeSettings();
-  resetGame();
+  abortCurrentGameAndReset();
 }
 
 function applyTheme(theme) {
@@ -587,9 +587,13 @@ function resetSettingsToDefaults() {
   closeSettings();
 }
 
-function cancelRound() {
+function abortCurrentGameAndReset() {
   restoreProfileState(gameStartProfileState);
   resetGame({ rememberProfileState: false });
+}
+
+function cancelRound() {
+  abortCurrentGameAndReset();
   closeSettings();
 }
 
@@ -664,7 +668,7 @@ themeToggle.addEventListener("click", function () {
 gameSelect.addEventListener("change", function () {
   selectedGamePoints = Number(gameSelect.value);
   localStorage.setItem("gamePoints", selectedGamePoints);
-  resetGame();
+  abortCurrentGameAndReset();
 });
 
 resetSettingsButton.addEventListener("click", resetSettingsToDefaults);
