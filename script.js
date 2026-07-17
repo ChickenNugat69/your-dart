@@ -264,7 +264,19 @@ function closeSettings() {
 }
 
 function getCurrentThrowScore() {
-  return currentDarts.reduce((sum, dart) => sum + dart.score, 0);
+  let throwHasStartedScoring = hasStartedScoring;
+
+  return currentDarts.reduce((sum, dart) => {
+    if (!throwHasStartedScoring) {
+      if (!dartMatchesMode(dart, selectedStartMode)) {
+        return sum;
+      }
+
+      throwHasStartedScoring = true;
+    }
+
+    return sum + dart.score;
+  }, 0);
 }
 
 function updatePreview() {
