@@ -208,22 +208,28 @@ function createKeyboardButton(label, onClick, className = "") {
   return button;
 }
 
+function isBullseyeMode(mode) {
+  return mode.name === "Double" || mode.name === "Triple";
+}
+
 function getKeyboardLabel(score) {
   let mode = multiplierModes[multiplierModeIndex];
 
   if (score === 25) {
-    return mode.name === "Triple" ? "50" : "25";
+    return isBullseyeMode(mode) ? "50" : "25";
   }
 
   return `${mode.prefix}${score}`;
 }
 
 function getKeyboardValue(score) {
+  let mode = multiplierModes[multiplierModeIndex];
+
   if (score === 25) {
-    return multiplierModes[multiplierModeIndex].name === "Triple" ? 50 : 25;
+    return isBullseyeMode(mode) ? 50 : 25;
   }
 
-  return score * multiplierModes[multiplierModeIndex].factor;
+  return score * mode.factor;
 }
 
 function renderKeyboard() {
