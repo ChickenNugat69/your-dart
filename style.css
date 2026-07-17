@@ -546,8 +546,12 @@ section{
     }
 
     .profileImage{
-        width:min(150px, 46vw);
+        width:min(225px, 69vw);
         margin-bottom:4px;
+    }
+
+    .rankPlaceholder{
+        font-size:216px;
     }
 
     .rankName{
