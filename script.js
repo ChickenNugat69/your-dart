@@ -52,6 +52,8 @@ const finishModes = [
   { value: "master", label: "Master Out" },
 ];
 
+const activeGameProfileStateKey = "activeGameProfileState";
+
 let selectedGamePoints = 501;
 let remainingPoints = selectedGamePoints;
 let roundTotalPoints = 0;
@@ -61,6 +63,9 @@ let savedTotalDarts = Number(localStorage.getItem("rankTotalDarts")) || 0;
 let savedBestFinish = Number(localStorage.getItem("bestFinish")) || 0;
 let savedTopScore = Number(localStorage.getItem("topScore")) || 0;
 let hasConfirmedThrow = savedTotalDarts > 0;
+
+restoreAbortedGameProfileState();
+
 let gameStartProfileState = getProfileState();
 
 let nextDart = 1;
@@ -136,8 +141,42 @@ function restoreProfileState(profileState) {
   saveProfileRecords();
 }
 
+function getStoredProfileState() {
+  let storedProfileState = localStorage.getItem(activeGameProfileStateKey);
+
+  if (storedProfileState === null) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedProfileState);
+  } catch (error) {
+    return null;
+  }
+}
+
+function clearStoredGameStartProfileState() {
+  localStorage.removeItem(activeGameProfileStateKey);
+}
+
+function storeGameStartProfileState(profileState) {
+  localStorage.setItem(activeGameProfileStateKey, JSON.stringify(profileState));
+}
+
+function restoreAbortedGameProfileState() {
+  let storedProfileState = getStoredProfileState();
+
+  if (storedProfileState === null) {
+    return;
+  }
+
+  restoreProfileState(storedProfileState);
+  clearStoredGameStartProfileState();
+}
+
 function rememberGameStartProfileState() {
   gameStartProfileState = getProfileState();
+  storeGameStartProfileState(gameStartProfileState);
 }
 
 function showRankStats() {
@@ -482,6 +521,7 @@ function processRound() {
 
   if (remainingPoints === 0) {
     gameFinished = true;
+    clearStoredGameStartProfileState();
     let finishScore = startRemaining;
 
     if (finishScore > savedBestFinish) {
@@ -590,6 +630,7 @@ function resetSettingsToDefaults() {
 function abortCurrentGameAndReset() {
   restoreProfileState(gameStartProfileState);
   resetGame({ rememberProfileState: false });
+  rememberGameStartProfileState();
 }
 
 function cancelRound() {
@@ -641,6 +682,7 @@ if (savedGamePoints >= 101 && savedGamePoints <= 901 && savedGamePoints % 100 ==
   remaining.innerText = selectedGamePoints;
 }
 
+rememberGameStartProfileState();
 refreshModeSettings();
 renderKeyboard();
 updateAverageDisplay();
